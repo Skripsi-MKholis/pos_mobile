@@ -4,6 +4,8 @@ import 'package:pos_mobile/KasirPage.dart';
 import 'package:pos_mobile/CheckoutPage.dart';
 import 'package:pos_mobile/LaporanPage.dart';
 import 'package:pos_mobile/PengaturanPage.dart';
+import 'package:pos_mobile/DashboardPage.dart';
+import 'package:pos_mobile/RiwayatTransaksiPage.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -45,9 +47,9 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = <Widget>[
+    DashboardPage(),
     KasirPage(),
-    CheckoutPage(),
-    LaporanPage(),
+    RiwayatTransaksiPage(),
     PengaturanPage(),
   ];
 
@@ -104,7 +106,29 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('POS Mobile'),
       ), */
-      appBar: MyAppBar(title: 'POS Mobile', isCenter: true),
+      appBar: MyAppBar(
+        title: 'POS Mobile',
+        isCenter: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: PopupMenuButton(
+              offset: const Offset(0, 45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 'profile', child: Text('Profile')),
+                const PopupMenuItem(value: 'logout', child: Text('Logout')),
+              ],
+              child: CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: const Icon(Icons.person, size: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
       drawer: Drawer(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -165,8 +189,8 @@ class _MainScreenState extends State<MainScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   children: [
                     _buildDrawerItem(
-                      icon: Icons.point_of_sale,
-                      text: 'Kasir',
+                      icon: Icons.dashboard_outlined,
+                      text: 'Dashboard',
                       isSelected: _selectedIndex == 0,
                       onTap: () {
                         Navigator.pop(context);
@@ -174,8 +198,8 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                     _buildDrawerItem(
-                      icon: Icons.shopping_cart_outlined,
-                      text: 'Checkout',
+                      icon: Icons.point_of_sale,
+                      text: 'Kasir',
                       isSelected: _selectedIndex == 1,
                       onTap: () {
                         Navigator.pop(context);
@@ -183,8 +207,8 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                     _buildDrawerItem(
-                      icon: Icons.list_alt,
-                      text: 'Laporan',
+                      icon: Icons.shopping_cart_outlined,
+                      text: 'Checkout',
                       isSelected: _selectedIndex == 2,
                       onTap: () {
                         Navigator.pop(context);
@@ -192,12 +216,30 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                     _buildDrawerItem(
-                      icon: Icons.settings_outlined,
-                      text: 'Pengaturan',
+                      icon: Icons.history,
+                      text: 'Riwayat Transaksi',
                       isSelected: _selectedIndex == 3,
                       onTap: () {
                         Navigator.pop(context);
                         _onItemTapped(3);
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.list_alt,
+                      text: 'Laporan',
+                      isSelected: _selectedIndex == 4,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onItemTapped(4);
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.settings_outlined,
+                      text: 'Pengaturan',
+                      isSelected: _selectedIndex == 5,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onItemTapped(5);
                       },
                     ),
 
@@ -281,16 +323,16 @@ class _MainScreenState extends State<MainScreen> {
               gap: 8,
               activeColor: Theme.of(context).colorScheme.primary,
               iconSize: 24,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
               duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Theme.of(
                 context,
               ).colorScheme.primary.withOpacity(0.1),
               color: Colors.grey[500],
               tabs: const [
+                GButton(icon: Icons.dashboard, text: 'Dashboard'),
                 GButton(icon: Icons.point_of_sale, text: 'Kasir'),
-                GButton(icon: Icons.shopping_cart, text: 'Checkout'),
-                GButton(icon: Icons.list, text: 'Laporan'),
+                GButton(icon: Icons.history, text: 'Riwayat'),
                 GButton(icon: Icons.settings, text: 'Pengaturan'),
               ],
               selectedIndex: _selectedIndex,

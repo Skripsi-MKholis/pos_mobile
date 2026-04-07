@@ -151,7 +151,7 @@ class _KasirPageState extends State<KasirPage> {
                     });
                   },
                   backgroundColor: Colors.redAccent,
-                  child: const Icon(TablerIcons.trash, color: Colors.white),
+                  child: const Icon(TablerIcons.x, color: Colors.white),
                 ),
                 const SizedBox(width: 10),
                 FloatingActionButton.extended(
