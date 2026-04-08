@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:pos_mobile/KasirPage.dart';
 import 'package:pos_mobile/CheckoutPage.dart';
@@ -7,8 +8,11 @@ import 'package:pos_mobile/PengaturanPage.dart';
 import 'package:pos_mobile/DashboardPage.dart';
 import 'package:pos_mobile/RiwayatTransaksiPage.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/MenuPage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:pos_mobile/KelolaTokoPage.dart';
+import 'package:pos_mobile/ManageStoresPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,8 +50,20 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
+  final List<Map<String, String>> _stores = [
+    {'name': 'Toko Berkah Jaya', 'email': 'admin@pos.com'},
+    {'name': 'Cabang Sudirman', 'email': 'sudirman@pos.com'},
+  ];
+  late Map<String, String> _selectedStore;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedStore = _stores[0];
+  }
+
   static const List<Widget> _pages = <Widget>[
-    DashboardPage(),
+    MenuPage(),
     KasirPage(),
     RiwayatTransaksiPage(),
     PengaturanPage(),
@@ -112,19 +128,67 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: PopupMenuButton(
+            child: PopupMenuButton<String>(
               offset: const Offset(0, 45),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              itemBuilder: (context) => [
-                const PopupMenuItem(value: 'profile', child: Text('Profile')),
-                const PopupMenuItem(value: 'logout', child: Text('Logout')),
-              ],
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
               child: CircleAvatar(
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 child: const Icon(Icons.person, size: 20),
               ),
+              onSelected: (value) {
+                switch (value) {
+                  case 'profile':
+                    // Navigate to profile page
+                    break;
+                  case 'logout':
+                    // Handle logout
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'profile',
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.person_outline,
+                        size: 20,
+                        color: Colors.black54,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Profile',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, size: 20, color: Colors.red[400]),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Logout',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -149,32 +213,180 @@ class _MainScreenState extends State<MainScreen> {
                         context,
                       ).colorScheme.primary.withOpacity(0.1),
                       child: Icon(
-                        Icons.person,
+                        Icons.store_rounded,
                         color: Theme.of(context).colorScheme.primary,
                         size: 28,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Admin Kasir',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                    Expanded(
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<Map<String, String>?>(
+                          isExpanded: true,
+                          customButton: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _selectedStore['name']!,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    size: 20,
+                                    color: Colors.black45,
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                _selectedStore['email']!,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'admin@pos.com',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
+                          items: [
+                            ..._stores.map(
+                              (store) => DropdownItem<Map<String, String>?>(
+                                value: store,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.storefront_outlined,
+                                      size: 18,
+                                      color: store == _selectedStore
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                          : Colors.black54,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      store['name']!,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 14,
+                                        fontWeight: store == _selectedStore
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        color: store == _selectedStore
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.primary
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
+                            const DropdownItem<Map<String, String>?>(
+                              enabled: false,
+                              value: null,
+                              child: Divider(height: 1),
+                            ),
+                            DropdownItem<Map<String, String>?>(
+                              value: const {'name': 'ADD_NEW', 'email': ''},
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.add_circle_outline_rounded,
+                                    size: 18,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Tambah Toko',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            DropdownItem<Map<String, String>?>(
+                              value: const {'name': 'MANAGE_ALL', 'email': ''},
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.settings_suggest_outlined,
+                                    size: 18,
+                                    color: Colors.black54,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Kelola Semua Toko',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value == null) return;
+                            final action = value['name'];
+                            if (action == 'ADD_NEW') {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const KelolaTokoPage(),
+                                ),
+                              );
+                            } else if (action == 'MANAGE_ALL') {
+                              Navigator.pop(context);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ManageStoresPage(),
+                                ),
+                              );
+                            } else {
+                              setState(() {
+                                _selectedStore = value;
+                              });
+                            }
+                          },
+                          dropdownStyleData: DropdownStyleData(
+                            width: 250,
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            offset: const Offset(-8, -5),
                           ),
-                        ],
+                          menuItemStyleData: const MenuItemStyleData(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -189,8 +401,8 @@ class _MainScreenState extends State<MainScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   children: [
                     _buildDrawerItem(
-                      icon: Icons.dashboard_outlined,
-                      text: 'Dashboard',
+                      icon: Icons.grid_view_rounded,
+                      text: 'Menu Utama',
                       isSelected: _selectedIndex == 0,
                       onTap: () {
                         Navigator.pop(context);
@@ -207,8 +419,8 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                     _buildDrawerItem(
-                      icon: Icons.shopping_cart_outlined,
-                      text: 'Checkout',
+                      icon: Icons.history,
+                      text: 'Riwayat Transaksi',
                       isSelected: _selectedIndex == 2,
                       onTap: () {
                         Navigator.pop(context);
@@ -216,30 +428,12 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                     _buildDrawerItem(
-                      icon: Icons.history,
-                      text: 'Riwayat Transaksi',
+                      icon: Icons.settings_outlined,
+                      text: 'Pengaturan',
                       isSelected: _selectedIndex == 3,
                       onTap: () {
                         Navigator.pop(context);
                         _onItemTapped(3);
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.list_alt,
-                      text: 'Laporan',
-                      isSelected: _selectedIndex == 4,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onItemTapped(4);
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.settings_outlined,
-                      text: 'Pengaturan',
-                      isSelected: _selectedIndex == 5,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onItemTapped(5);
                       },
                     ),
 
@@ -249,6 +443,20 @@ class _MainScreenState extends State<MainScreen> {
                         horizontal: 12,
                       ),
                       child: Divider(color: Colors.grey[200], height: 1),
+                    ),
+
+                    _buildDrawerItem(
+                      icon: Icons.store_mall_directory_outlined,
+                      text: 'Kelola Seluruh Toko',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManageStoresPage(),
+                          ),
+                        );
+                      },
                     ),
 
                     const Padding(
@@ -330,10 +538,10 @@ class _MainScreenState extends State<MainScreen> {
               ).colorScheme.primary.withOpacity(0.1),
               color: Colors.grey[500],
               tabs: const [
-                GButton(icon: Icons.dashboard, text: 'Dashboard'),
+                GButton(icon: Icons.grid_view_rounded, text: 'Menu'),
                 GButton(icon: Icons.point_of_sale, text: 'Kasir'),
                 GButton(icon: Icons.history, text: 'Riwayat'),
-                GButton(icon: Icons.settings, text: 'Pengaturan'),
+                GButton(icon: Icons.settings, text: 'Setelan'),
               ],
               selectedIndex: _selectedIndex,
               onTabChange: _onItemTapped,

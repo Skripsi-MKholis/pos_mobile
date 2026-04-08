@@ -4,93 +4,130 @@ import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 
-class CheckoutPage extends StatelessWidget {
-  const CheckoutPage({super.key});
+class CheckoutPage extends StatefulWidget {
+  final List<Map<String, dynamic>> cartItems;
+  const CheckoutPage({super.key, required this.cartItems});
+
+  @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends State<CheckoutPage> {
+  late List<Map<String, dynamic>> items;
+
+  @override
+  void initState() {
+    super.initState();
+    // Copy the items to allow local editing of quantities
+    items = List<Map<String, dynamic>>.from(
+      widget.cartItems.map((item) => Map<String, dynamic>.from(item)),
+    );
+  }
+
+  double get totalPrice {
+    return items.fold(0, (sum, item) => sum + (item['price'] * item['qty']));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.all(10),
-        children: [
-          _buildCartItem(
-            name: 'Kopi Susu Gula Aren',
-            price: 18000,
-            qty: 2,
-            imageUrl: 'https://via.placeholder.com/150',
-          ),
-          _buildCartItem(
-            name: 'Roti Bakar Coklat',
-            price: 15000,
-            qty: 1,
-            imageUrl: 'https://via.placeholder.com/150',
-          ),
-          _buildCartItem(
-            name: 'Kentang Goreng',
-            price: 12000,
-            qty: 1,
-            imageUrl: 'https://via.placeholder.com/150',
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total Pembayaran',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
-                    color: Colors.grey[700],
+      appBar: MyAppBar(title: 'Checkout', isCenter: true),
+      body: items.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(TablerIcons.shopping_cart_off,
+                      size: 80, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Keranjang Kosong',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-                Text(
-                  'Rp 63.000',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Warna.Primary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            myButtonPrimary(
-              onPressed: () {
-                MySnackBar(
-                  context: context,
-                  text: 'Pembayaran Berhasil!',
-                  status: ToastStatus.success,
+                ],
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return _buildCartItem(
+                  index: index,
+                  name: item['name'],
+                  price: item['price'].toDouble(),
+                  qty: item['qty'],
+                  imageUrl: item['image'],
                 );
               },
-              backgroundColor: Warna.Primary,
-              foregroundColor: Colors.white,
-              child: const Text(
-                'Bayar Sekarang',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+      bottomNavigationBar: items.isEmpty
+          ? null
+          : Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Pembayaran',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 16,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      Text(
+                        'Rp ${totalPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Warna.Primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  myButtonPrimary(
+                    onPressed: () {
+                      MySnackBar(
+                        context: context,
+                        text: 'Pembayaran Berhasil!',
+                        status: ToastStatus.success,
+                      );
+                      Navigator.pop(context);
+                    },
+                    backgroundColor: Warna.Primary,
+                    foregroundColor: Colors.white,
+                    child: const Text(
+                      'Bayar Sekarang',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
   Widget _buildCartItem({
+    required int index,
     required String name,
     required double price,
     required int qty,
@@ -102,6 +139,13 @@ class CheckoutPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            blurRadius: 5,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -131,6 +175,8 @@ class CheckoutPage extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -146,7 +192,15 @@ class CheckoutPage extends StatelessWidget {
           ),
           Row(
             children: [
-              _buildQtyButton(TablerIcons.minus, () {}),
+              _buildQtyButton(TablerIcons.minus, () {
+                setState(() {
+                  if (items[index]['qty'] > 1) {
+                    items[index]['qty']--;
+                  } else {
+                    items.removeAt(index);
+                  }
+                });
+              }),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
@@ -157,7 +211,11 @@ class CheckoutPage extends StatelessWidget {
                   ),
                 ),
               ),
-              _buildQtyButton(TablerIcons.plus, () {}),
+              _buildQtyButton(TablerIcons.plus, () {
+                setState(() {
+                  items[index]['qty']++;
+                });
+              }),
             ],
           ),
         ],

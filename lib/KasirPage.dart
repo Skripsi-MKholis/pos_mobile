@@ -157,12 +157,29 @@ class _KasirPageState extends State<KasirPage> {
                 FloatingActionButton.extended(
                   heroTag: 'checkoutBtn',
                   onPressed: () {
+                    List<Map<String, dynamic>> selectedItems = [];
+                    _cartQty.forEach((name, qty) {
+                      final product =
+                          products.firstWhere((p) => p['name'] == name);
+                      selectedItems.add({
+                        'name': product['name'],
+                        'price': product['price'],
+                        'image': product['image'],
+                        'qty': qty,
+                      });
+                    });
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CheckoutPage(),
+                        builder: (context) => CheckoutPage(
+                          cartItems: selectedItems,
+                        ),
                       ),
-                    );
+                    ).then((_) {
+                      // Optional: Clear or refresh cart after coming back if needed
+                      // For now, we just let it be.
+                    });
                   },
                   backgroundColor: Warna.Primary,
                   icon: const Icon(

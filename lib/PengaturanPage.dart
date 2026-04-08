@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:tabler_icons/tabler_icons.dart';
+import 'package:pos_mobile/KelolaTokoPage.dart';
 
 class PengaturanPage extends StatelessWidget {
   const PengaturanPage({super.key});
@@ -70,7 +71,12 @@ class PengaturanPage extends StatelessWidget {
           _buildSettingsItem(
             icon: TablerIcons.building_store,
             title: 'Informasi Toko',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const KelolaTokoPage()),
+              );
+            },
           ),
           _buildSettingsItem(
             icon: TablerIcons.printer,

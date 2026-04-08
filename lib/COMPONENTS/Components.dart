@@ -1,23 +1,22 @@
-import 'dart:io';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pos_mobile/KosongPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shimmer/main.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
+import 'package:delightful_toast/toast/utils/enums.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String imageUrl;
   Color color;
   final actions;
+  final Widget? leading;
   bool isCenter;
 
   MyAppBar({
@@ -25,6 +24,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.color = Colors.black,
     this.imageUrl = '',
     this.actions,
+    this.leading,
     this.isCenter = false,
   });
 
@@ -41,6 +41,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
     return AppBar(
       centerTitle: isCenter,
+      leading: leading,
       title: Row(
         mainAxisAlignment: isCenter
             ? MainAxisAlignment.center
