@@ -213,6 +213,8 @@ Widget myTextField({
   bool obscureText = false,
   String? Function(String?)? validator,
   int maxLines = 1,
+  Widget? prefix,
+  Widget? suffix,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,6 +241,8 @@ Widget myTextField({
         decoration: InputDecoration(
           hintText: placeholder, // Ganti labelText dengan hintText
           hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+          prefixIcon: prefix,
+          suffixIcon: suffix,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
             borderSide: BorderSide(color: Colors.transparent),

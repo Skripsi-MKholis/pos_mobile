@@ -6,6 +6,7 @@ import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:intl/intl.dart';
 import 'package:pos_mobile/pages/owner/manage_categories_page.dart';
+import 'package:pos_mobile/pages/owner/manage_discounts_page.dart';
 import 'package:pos_mobile/pages/owner/product_overview_page.dart';
 
 class ManageProductsPage extends StatefulWidget {
@@ -38,6 +39,11 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
       'barcode': '8991234567',
       'description': 'Kopi Susu segar dengan gula aren murni.',
       'variants': [],
+      'appliedDiscount': {
+        'name': 'Promo Awal Tahun',
+        'type': 'Persentase (%)',
+        'value': 10,
+      },
     },
     {
       'name': 'Americano',
@@ -969,6 +975,20 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
+                          builder: (context) => const ManageDiscountsPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      TablerIcons.discount_2,
+                      color: Warna.Primary,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
                           builder: (context) => const ProductOverviewPage(),
                         ),
                       );
@@ -1297,14 +1317,44 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                               style: TextStyle(color: Colors.grey[400]),
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              currencyFormat.format(product['price']),
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Warna.Primary,
+                            if (product['appliedDiscount'] != null) ...[
+                              Text(
+                                currencyFormat.format(product['price']),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: Colors.grey[400],
+                                  decoration: TextDecoration.lineThrough,
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              Text(
+                                currencyFormat.format(
+                                  product['appliedDiscount']['type'] ==
+                                          'Persentase (%)'
+                                      ? product['price'] *
+                                          (1 -
+                                              product['appliedDiscount']
+                                                      ['value'] /
+                                                  100)
+                                      : product['price'] -
+                                          product['appliedDiscount']['value'],
+                                ),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Warna.Primary,
+                                ),
+                              ),
+                            ] else ...[
+                              Text(
+                                currencyFormat.format(product['price']),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Warna.Primary,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ],
@@ -1450,23 +1500,52 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         Positioned(
                           top: 8,
                           left: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Warna.Primary.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              product['category'],
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 10,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Warna.Primary.withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  product['category'],
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
+                              if (product['appliedDiscount'] != null) ...[
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    product['appliedDiscount']['type'] ==
+                                            'Persentase (%)'
+                                        ? '-${product['appliedDiscount']['value'].toInt()}%'
+                                        : 'DISKON',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                     ],
@@ -1490,14 +1569,42 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          currencyFormat.format(product['price']),
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Warna.Primary,
+                        if (product['appliedDiscount'] != null) ...[
+                          Text(
+                            currencyFormat.format(product['price']),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: Colors.grey[400],
+                              decoration: TextDecoration.lineThrough,
+                            ),
                           ),
-                        ),
+                          Text(
+                            currencyFormat.format(
+                              product['appliedDiscount']['type'] ==
+                                      'Persentase (%)'
+                                  ? product['price'] *
+                                      (1 -
+                                          product['appliedDiscount']['value'] /
+                                              100)
+                                  : product['price'] -
+                                      product['appliedDiscount']['value'],
+                            ),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Warna.Primary,
+                            ),
+                          ),
+                        ] else ...[
+                          Text(
+                            currencyFormat.format(product['price']),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Warna.Primary,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
