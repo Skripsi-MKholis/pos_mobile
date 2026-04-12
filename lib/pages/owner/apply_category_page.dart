@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 
@@ -18,6 +19,7 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedCategoryFilter = 'Semua';
+  bool _isGridView = false;
   final Set<int> _selectedProductIndices = {};
 
   // Mock categories for filtering
@@ -132,7 +134,24 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Warna.BG,
-      appBar: MyAppBar(title: 'Tambah ke Kategori', isCenter: true),
+      appBar: MyAppBar(
+        title: 'Tambah ke Kategori',
+        isCenter: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isGridView = !_isGridView;
+              });
+            },
+            icon: Icon(
+              _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
+              color: Warna.Primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: Column(
         children: [
           // Target Category Info
@@ -242,72 +261,55 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
           Expanded(
             child: filteredProducts.isEmpty
                 ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    itemCount: filteredProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = filteredProducts[index];
-                      final originalIndex = products.indexOf(product);
-                      final isSelected = _selectedProductIndices.contains(
-                        originalIndex,
-                      );
+                : _isGridView
+                    ? GridView.builder(
+                        padding: const EdgeInsets.all(16),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = filteredProducts[index];
+                          final originalIndex = products.indexOf(product);
+                          final isSelected = _selectedProductIndices.contains(
+                            originalIndex,
+                          );
 
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected
-                                ? Warna.Primary.withValues(alpha: 0.5)
-                                : Colors.transparent,
-                            width: 1.5,
-                          ),
+                          return MyProductCard(
+                            product: product,
+                            isGridView: true,
+                            isSelected: isSelected,
+                            isSelectionMode: true,
+                            onTap: () => _toggleProductSelection(originalIndex),
+                          );
+                        },
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
                         ),
-                        child: CheckboxListTile(
-                          value: isSelected,
-                          onChanged: (val) =>
-                              _toggleProductSelection(originalIndex),
-                          activeColor: Warna.Primary,
-                          checkboxShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          title: Text(
-                            product['name'],
-                            style: GoogleFonts.plusJakartaSans(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          subtitle: Text(
-                            product['category'],
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: product['category'] == widget.categoryName 
-                                ? Warna.Primary 
-                                : Colors.grey[600],
-                              fontWeight: product['category'] == widget.categoryName 
-                                ? FontWeight.bold 
-                                : FontWeight.normal,
-                            ),
-                          ),
-                          secondary: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              product['image'],
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          controlAffinity: ListTileControlAffinity.trailing,
-                        ),
-                      );
-                    },
-                  ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = filteredProducts[index];
+                          final originalIndex = products.indexOf(product);
+                          final isSelected = _selectedProductIndices.contains(
+                            originalIndex,
+                          );
+
+                          return MyProductCard(
+                            product: product,
+                            isGridView: false,
+                            isSelected: isSelected,
+                            isSelectionMode: true,
+                            onTap: () => _toggleProductSelection(originalIndex),
+                          );
+                        },
+                      ),
           ),
 
           // Action Button

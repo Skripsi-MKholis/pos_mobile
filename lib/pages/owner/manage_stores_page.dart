@@ -14,6 +14,7 @@ class ManageStoresPage extends StatefulWidget {
 }
 
 class _ManageStoresPageState extends State<ManageStoresPage> {
+  bool _isGridView = false;
   final List<Map<String, String>> _stores = [
     {
       'name': 'Toko Berkah Jaya',
@@ -42,17 +43,48 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
       appBar: MyAppBar(
         title: 'Kelola Seluruh Toko',
         isCenter: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isGridView = !_isGridView;
+              });
+            },
+            icon: Icon(
+              _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
+              color: Warna.Primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(20),
-        itemCount: _stores.length,
-        itemBuilder: (context, index) {
-          final store = _stores[index];
-          final isActive = store['status'] == 'active';
+      body: _isGridView
+          ? GridView.builder(
+              padding: const EdgeInsets.all(20),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.85,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: _stores.length,
+              itemBuilder: (context, index) {
+                final store = _stores[index];
+                final isActive = store['status'] == 'active';
 
-          return _buildStoreCard(store, isActive, index);
-        },
-      ),
+                return _buildStoreGridItem(store, isActive, index);
+              },
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: _stores.length,
+              itemBuilder: (context, index) {
+                final store = _stores[index];
+                final isActive = store['status'] == 'active';
+
+                return _buildStoreCard(store, isActive, index);
+              },
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
@@ -291,6 +323,134 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                 color: Colors.redAccent,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStoreGridItem(
+      Map<String, String> store, bool isActive, int index) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: Warna.Primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      TablerIcons.building_store,
+                      color: Warna.Primary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    store['name']!,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  if (isActive)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8FAF0),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Aktif',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: const Color(0xff1AC966),
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Divider(color: Colors.grey[100], height: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KelolaTokoPage(),
+                      ),
+                    );
+                  },
+                  icon:
+                      const Icon(TablerIcons.edit, size: 18, color: Warna.Primary),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      for (var s in _stores) {
+                        s['status'] = 'inactive';
+                      }
+                      _stores[index]['status'] = 'active';
+                    });
+                    MySnackBar(
+                      context: context,
+                      text: 'Toko ${store['name']} terpilih',
+                      status: ToastStatus.success,
+                    );
+                  },
+                  icon: Icon(
+                    isActive ? TablerIcons.circle_check : TablerIcons.circle,
+                    size: 18,
+                    color: isActive ? const Color(0xff1AC966) : Colors.black54,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                IconButton(
+                  onPressed: () => _showDeleteDialog(store['name']!, index),
+                  icon: const Icon(TablerIcons.trash,
+                      size: 18, color: Colors.redAccent),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
             ),
           ),
         ],

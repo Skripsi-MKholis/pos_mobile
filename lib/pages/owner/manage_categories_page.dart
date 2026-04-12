@@ -16,6 +16,7 @@ class ManageCategoriesPage extends StatefulWidget {
 
 class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
   late List<String> categories;
+  bool _isGridView = false;
 
   @override
   void initState() {
@@ -162,96 +163,198 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
             Navigator.pop(context, ['Semua', ...categories]);
           },
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isGridView = !_isGridView;
+              });
+            },
+            icon: Icon(
+              _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
+              color: Warna.Primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: categories.isEmpty
           ? _buildEmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
+          : _isGridView
+              ? GridView.builder(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Warna.Primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          TablerIcons.category,
-                          color: Warna.Primary,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          categories[index],
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              TablerIcons.playlist_add,
-                              color: Colors.green,
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ApplyCategoryPage(
-                                    categoryName: categories[index],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              TablerIcons.edit,
-                              color: Colors.blue,
-                              size: 20,
-                            ),
-                            onPressed: () => _showCategoryForm(
-                              category: categories[index],
-                              index: index,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              TablerIcons.trash,
-                              color: Colors.red,
-                              size: 20,
-                            ),
-                            onPressed: () => _confirmDelete(index),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Warna.Primary.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              TablerIcons.category,
+                              color: Warna.Primary,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            categories[index],
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: const Icon(TablerIcons.playlist_add,
+                                    color: Colors.green, size: 18),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ApplyCategoryPage(
+                                        categoryName: categories[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(TablerIcons.edit,
+                                    color: Colors.blue, size: 18),
+                                onPressed: () => _showCategoryForm(
+                                  category: categories[index],
+                                  index: index,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(TablerIcons.trash,
+                                    color: Colors.red, size: 18),
+                                onPressed: () => _confirmDelete(index),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Warna.Primary.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              TablerIcons.category,
+                              color: Warna.Primary,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              categories[index],
+                              style: GoogleFonts.plusJakartaSans(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  TablerIcons.playlist_add,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ApplyCategoryPage(
+                                        categoryName: categories[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  TablerIcons.edit,
+                                  color: Colors.blue,
+                                  size: 20,
+                                ),
+                                onPressed: () => _showCategoryForm(
+                                  category: categories[index],
+                                  index: index,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  TablerIcons.trash,
+                                  color: Colors.red,
+                                  size: 20,
+                                ),
+                                onPressed: () => _confirmDelete(index),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCategoryForm(),
         backgroundColor: Warna.Primary,

@@ -5,6 +5,7 @@ import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:intl/intl.dart';
+import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
 import 'package:pos_mobile/pages/owner/manage_categories_page.dart';
 import 'package:pos_mobile/pages/owner/manage_discounts_page.dart';
 import 'package:pos_mobile/pages/owner/product_overview_page.dart';
@@ -1213,181 +1214,41 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
   ) {
     final isSelected = _selectedIndices.contains(originalIndex);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? Warna.Primary.withValues(alpha: 0.05)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: isSelected
-            ? Border.all(color: Warna.Primary.withValues(alpha: 0.3), width: 1)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: BounceTapper(
-              onTap: () {
-                if (_isLongPressing) {
-                  _isLongPressing = false;
-                  return;
-                }
+    return MyProductCard(
+      product: product,
+      isGridView: false,
+      isSelected: isSelected,
+      isSelectionMode: _isSelectionMode,
+      showActions: !_isSelectionMode,
+      currencyFormat: currencyFormat,
+      onTap: () {
+        if (_isLongPressing) {
+          _isLongPressing = false;
+          return;
+        }
 
-                if (_isSelectionMode) {
-                  setState(() {
-                    if (isSelected) {
-                      _selectedIndices.remove(originalIndex);
-                    } else {
-                      _selectedIndices.add(originalIndex);
-                    }
-                  });
-                } else {
-                  _showProductForm(product: product, index: originalIndex);
-                }
-              },
-              onLongPress: () {
-                if (!_isSelectionMode) {
-                  setState(() {
-                    _isLongPressing = true;
-                    _selectedIndices.add(originalIndex);
-                  });
-                }
-              },
-              child: Row(
-                children: [
-                  if (_isSelectionMode) ...[
-                    Icon(
-                      isSelected ? TablerIcons.checkbox : TablerIcons.square,
-                      color: isSelected ? Warna.Primary : Colors.grey[400],
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      product['image'],
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 60,
-                        height: 60,
-                        color: Colors.grey[100],
-                        child: const Icon(Icons.image, color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product['name'],
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              product['category'],
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '•',
-                              style: TextStyle(color: Colors.grey[400]),
-                            ),
-                            const SizedBox(width: 8),
-                            if (product['appliedDiscount'] != null) ...[
-                              Text(
-                                currencyFormat.format(product['price']),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 12,
-                                  color: Colors.grey[400],
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                currencyFormat.format(
-                                  product['appliedDiscount']['type'] ==
-                                          'Persentase (%)'
-                                      ? product['price'] *
-                                          (1 -
-                                              product['appliedDiscount']
-                                                      ['value'] /
-                                                  100)
-                                      : product['price'] -
-                                          product['appliedDiscount']['value'],
-                                ),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Warna.Primary,
-                                ),
-                              ),
-                            ] else ...[
-                              Text(
-                                currencyFormat.format(product['price']),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Warna.Primary,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (!_isSelectionMode)
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () =>
-                      _showProductForm(product: product, index: originalIndex),
-                  icon: const Icon(
-                    TablerIcons.edit,
-                    color: Colors.blue,
-                    size: 20,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => _confirmDelete(originalIndex),
-                  icon: const Icon(
-                    TablerIcons.trash,
-                    color: Colors.red,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
+        if (_isSelectionMode) {
+          setState(() {
+            if (isSelected) {
+              _selectedIndices.remove(originalIndex);
+            } else {
+              _selectedIndices.add(originalIndex);
+            }
+          });
+        } else {
+          _showProductForm(product: product, index: originalIndex);
+        }
+      },
+      onLongPress: () {
+        if (!_isSelectionMode) {
+          setState(() {
+            _isLongPressing = true;
+            _selectedIndices.add(originalIndex);
+          });
+        }
+      },
+      onEdit: () => _showProductForm(product: product, index: originalIndex),
+      onDelete: () => _confirmDelete(originalIndex),
     );
   }
 
@@ -1398,271 +1259,41 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
   ) {
     final isSelected = _selectedIndices.contains(originalIndex);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: isSelected
-            ? Border.all(color: Warna.Primary.withOpacity(0.5), width: 2)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: isSelected
-                ? Warna.Primary.withOpacity(0.1)
-                : Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          BounceTapper(
-            onTap: () {
-              if (_isLongPressing) {
-                _isLongPressing = false;
-                return;
-              }
+    return MyProductCard(
+      product: product,
+      isGridView: true,
+      isSelected: isSelected,
+      isSelectionMode: _isSelectionMode,
+      showActions: !_isSelectionMode,
+      currencyFormat: currencyFormat,
+      onTap: () {
+        if (_isLongPressing) {
+          _isLongPressing = false;
+          return;
+        }
 
-              if (_isSelectionMode) {
-                setState(() {
-                  if (isSelected) {
-                    _selectedIndices.remove(originalIndex);
-                  } else {
-                    _selectedIndices.add(originalIndex);
-                  }
-                });
-              } else {
-                _showProductForm(product: product, index: originalIndex);
-              }
-            },
-            onLongPress: () {
-              if (!_isSelectionMode) {
-                setState(() {
-                  _isLongPressing = true;
-                  _selectedIndices.add(originalIndex);
-                });
-              }
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Image Section
-                Expanded(
-                  flex: 3,
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(20),
-                        ),
-                        child: Image.network(
-                          product['image'] ?? 'https://via.placeholder.com/150',
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: Colors.grey[100],
-                            child: const Center(
-                              child: Icon(Icons.image, color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Selection Overlay
-                      if (_isSelectionMode)
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Warna.Primary.withOpacity(0.2)
-                                  : Colors.black.withOpacity(0.1),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(20),
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                isSelected
-                                    ? TablerIcons.checkbox
-                                    : TablerIcons.square,
-                                color: isSelected
-                                    ? Colors.white
-                                    : Colors.white70,
-                                size: 32,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      // Category Badge
-                      if (!_isSelectionMode)
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Warna.Primary.withOpacity(0.9),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  product['category'],
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 10,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              if (product['appliedDiscount'] != null) ...[
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.withOpacity(0.9),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    product['appliedDiscount']['type'] ==
-                                            'Persentase (%)'
-                                        ? '-${product['appliedDiscount']['value'].toInt()}%'
-                                        : 'DISKON',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 10,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                // Details Section
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          product['name'],
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (product['appliedDiscount'] != null) ...[
-                          Text(
-                            currencyFormat.format(product['price']),
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10,
-                              color: Colors.grey[400],
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
-                          Text(
-                            currencyFormat.format(
-                              product['appliedDiscount']['type'] ==
-                                      'Persentase (%)'
-                                  ? product['price'] *
-                                      (1 -
-                                          product['appliedDiscount']['value'] /
-                                              100)
-                                  : product['price'] -
-                                      product['appliedDiscount']['value'],
-                            ),
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Warna.Primary,
-                            ),
-                          ),
-                        ] else ...[
-                          Text(
-                            currencyFormat.format(product['price']),
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Warna.Primary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Actions (Edit/Delete) overlay - moved outside main BounceTapper
-          if (!_isSelectionMode)
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Row(
-                children: [
-                  _buildMiniAction(
-                    icon: TablerIcons.edit,
-                    color: Colors.blue,
-                    onTap: () => _showProductForm(
-                      product: product,
-                      index: originalIndex,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  _buildMiniAction(
-                    icon: TablerIcons.trash,
-                    color: Colors.red,
-                    onTap: () => _confirmDelete(originalIndex),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMiniAction({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return BounceTapper(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Icon(icon, size: 14, color: color),
-      ),
+        if (_isSelectionMode) {
+          setState(() {
+            if (isSelected) {
+              _selectedIndices.remove(originalIndex);
+            } else {
+              _selectedIndices.add(originalIndex);
+            }
+          });
+        } else {
+          _showProductForm(product: product, index: originalIndex);
+        }
+      },
+      onLongPress: () {
+        if (!_isSelectionMode) {
+          setState(() {
+            _isLongPressing = true;
+            _selectedIndices.add(originalIndex);
+          });
+        }
+      },
+      onEdit: () => _showProductForm(product: product, index: originalIndex),
+      onDelete: () => _confirmDelete(originalIndex),
     );
   }
 

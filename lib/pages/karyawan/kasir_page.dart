@@ -4,7 +4,9 @@ import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
+import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
 import 'package:pos_mobile/pages/karyawan/checkout_page.dart';
+import 'package:intl/intl.dart';
 
 class KasirPage extends StatefulWidget {
   const KasirPage({super.key});
@@ -15,6 +17,7 @@ class KasirPage extends StatefulWidget {
 
 class _KasirPageState extends State<KasirPage> {
   final TextEditingController _searchController = TextEditingController();
+  bool _isGridView = true;
 
   String _selectedCategory = 'Semua';
   String _searchQuery = '';
@@ -126,6 +129,18 @@ class _KasirPageState extends State<KasirPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(TablerIcons.barcode, color: Colors.white),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isGridView = !_isGridView;
+                    });
+                  },
+                  icon: Icon(
+                    _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
+                    color: Warna.Primary,
+                  ),
                 ),
               ],
             ),
@@ -254,179 +269,83 @@ class _KasirPageState extends State<KasirPage> {
   }
 
   Widget _buildProductGrid() {
+    final fmt = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+
     return Expanded(
       child: Column(
         children: [
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 85),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index];
-                final int qty = _cartQty[product['name']] ?? 0;
-                final bool isSelected = qty > 0;
-
-                return BounceTapper(
-                  onTap: () {
-                    if (DateTime.now()
-                            .difference(_lastButtonTap)
-                            .inMilliseconds <
-                        400)
-                      return;
-                    if (!isSelected) {
-                      setState(() {
-                        _cartQty[product['name']] = 1;
-                      });
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Warna.Primary.withOpacity(0.05)
-                          : Colors.white,
-                      border: isSelected
-                          ? Border.all(color: Warna.Primary, width: 2)
-                          : Border.all(color: Colors.transparent, width: 2),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        ),
-                      ],
+            child: _isGridView
+                ? GridView.builder(
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, bottom: 85),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.72,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(
-                                10,
-                              ), // match inner radius without border overlap
-                            ),
-                            child: Image.network(
-                              product['image'],
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                width: double.infinity,
-                                color: Colors.grey[200],
-                                child: const Icon(
-                                  Icons.image,
-                                  color: Colors.grey,
-                                  size: 50,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product['name'],
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Rp ${product['price']}',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.bold,
-                                  color: Warna.Primary,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              if (isSelected) const SizedBox(height: 8),
-                              if (isSelected)
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _lastButtonTap = DateTime.now();
-                                          if (qty > 1) {
-                                            _cartQty[product['name']] = qty - 1;
-                                          } else {
-                                            _cartQty.remove(product['name']);
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red[100],
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          TablerIcons.minus,
-                                          color: Colors.red,
-                                          size: 16,
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      '$qty',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _lastButtonTap = DateTime.now();
-                                          _cartQty[product['name']] = qty + 1;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: Warna.Primary.withOpacity(0.2),
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          TablerIcons.plus,
-                                          color: Warna.Primary,
-                                          size: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    itemCount: filteredProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = filteredProducts[index];
+                      return _buildProductItem(product, fmt);
+                    },
+                  )
+                : ListView.builder(
+                    padding:
+                        const EdgeInsets.only(left: 15, right: 15, bottom: 85),
+                    itemCount: filteredProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = filteredProducts[index];
+                      return _buildProductItem(product, fmt);
+                    },
                   ),
-                );
-              },
-            ),
           ),
-          /* const SizedBox(height: 80), */
         ],
       ),
+    );
+  }
+
+  Widget _buildProductItem(Map<String, dynamic> product, NumberFormat fmt) {
+    final int qty = _cartQty[product['name']] ?? 0;
+    final bool isSelected = qty > 0;
+
+    return MyProductCard(
+      product: product,
+      isGridView: _isGridView,
+      isSelected: isSelected,
+      currencyFormat: fmt,
+      quantity: qty,
+      onTap: () {
+        if (DateTime.now().difference(_lastButtonTap).inMilliseconds < 400)
+          return;
+        if (!isSelected) {
+          setState(() {
+            _cartQty[product['name']] = 1;
+          });
+        }
+      },
+      onIncrement: () {
+        setState(() {
+          _lastButtonTap = DateTime.now();
+          _cartQty[product['name']] = qty + 1;
+        });
+      },
+      onDecrement: () {
+        setState(() {
+          _lastButtonTap = DateTime.now();
+          if (qty > 1) {
+            _cartQty[product['name']] = qty - 1;
+          } else {
+            _cartQty.remove(product['name']);
+          }
+        });
+      },
     );
   }
 

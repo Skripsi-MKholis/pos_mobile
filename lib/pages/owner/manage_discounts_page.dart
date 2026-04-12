@@ -14,6 +14,7 @@ class ManageDiscountsPage extends StatefulWidget {
 }
 
 class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
+  bool _isGridView = false;
   // Mock data for discounts
   List<Map<String, dynamic>> discounts = [
     {
@@ -264,171 +265,335 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
       appBar: MyAppBar(
         title: 'Kelola Diskon',
         isCenter: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isGridView = !_isGridView;
+              });
+            },
+            icon: Icon(
+              _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
+              color: Warna.Primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: discounts.isEmpty
           ? _buildEmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: discounts.length,
-              itemBuilder: (context, index) {
-                final d = discounts[index];
-                final bool isActive = d['isActive'] ?? false;
-                final String valueDisplay = d['type'] == 'Persentase (%)'
-                    ? '${d['value']}%'
-                    : currencyFormat.format(d['value']);
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
+          : _isGridView
+              ? GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
                   ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Container(
+                  itemCount: discounts.length,
+                  itemBuilder: (context, index) {
+                    final d = discounts[index];
+                    final bool isActive = d['isActive'] ?? false;
+                    final String valueDisplay = d['type'] == 'Persentase (%)'
+                        ? '${d['value']}%'
+                        : currencyFormat.format(d['value']);
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
                               padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: isActive
-                                    ? Warna.Primary.withValues(alpha: 0.1)
-                                    : Colors.grey[100],
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Icon(
-                                TablerIcons.discount_2,
-                                color: isActive ? Warna.Primary : Colors.grey,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          d['name'],
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: isActive ? Colors.black : Colors.grey[600],
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: isActive ? Colors.green.withValues(alpha: 0.1) : Colors.grey[200],
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          isActive ? 'Aktif' : 'Non-aktif',
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: isActive ? Colors.green : Colors.grey[600],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: isActive
+                                          ? Warna.Primary.withValues(alpha: 0.1)
+                                          : Colors.grey[100],
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      TablerIcons.discount_2,
+                                      color: isActive
+                                          ? Warna.Primary
+                                          : Colors.grey,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    d['name'],
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: isActive
+                                          ? Colors.black
+                                          : Colors.grey[600],
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     valueDisplay,
                                     style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 14,
-                                      color: isActive ? Warna.Primary : Colors.grey,
-                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                      color: isActive
+                                          ? Warna.Primary
+                                          : Colors.grey,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: isActive
+                                          ? Colors.green.withValues(alpha: 0.1)
+                                          : Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      isActive ? 'Aktif' : 'Non-aktif',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: isActive
+                                            ? Colors.green
+                                            : Colors.grey[600],
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const Divider(height: 1, thickness: 0.5),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ApplyDiscountPage(
+                                          selectedDiscount: d,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(TablerIcons.checkbox,
+                                      size: 18, color: Colors.green),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                                IconButton(
+                                  onPressed: () => _showDiscountForm(
+                                    discount: d,
+                                    index: index,
+                                  ),
+                                  icon: const Icon(TablerIcons.edit,
+                                      size: 18, color: Colors.blue),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                                IconButton(
+                                  onPressed: () => _confirmDelete(index),
+                                  icon: const Icon(TablerIcons.trash,
+                                      size: 18, color: Colors.red),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const Divider(height: 1, thickness: 0.5),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextButton.icon(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ApplyDiscountPage(
-                                        selectedDiscount: d,
+                    );
+                  },
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: discounts.length,
+                  itemBuilder: (context, index) {
+                    final d = discounts[index];
+                    final bool isActive = d['isActive'] ?? false;
+                    final String valueDisplay = d['type'] == 'Persentase (%)'
+                        ? '${d['value']}%'
+                        : currencyFormat.format(d['value']);
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: isActive
+                                        ? Warna.Primary.withValues(alpha: 0.1)
+                                        : Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Icon(
+                                    TablerIcons.discount_2,
+                                    color: isActive ? Warna.Primary : Colors.grey,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              d['name'],
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: isActive ? Colors.black : Colors.grey[600],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: isActive ? Colors.green.withValues(alpha: 0.1) : Colors.grey[200],
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              isActive ? 'Aktif' : 'Non-aktif',
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: isActive ? Colors.green : Colors.grey[600],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        valueDisplay,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 14,
+                                          color: isActive ? Warna.Primary : Colors.grey,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(height: 1, thickness: 0.5),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ApplyDiscountPage(
+                                            selectedDiscount: d,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(TablerIcons.checkbox, size: 18),
+                                    label: Text(
+                                      'Terapkan ke Produk',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
                                       ),
                                     ),
-                                  );
-                                },
-                                icon: const Icon(TablerIcons.checkbox, size: 18),
-                                label: Text(
-                                  'Terapkan ke Produk',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                                    style: TextButton.styleFrom(
+                                      iconColor: Colors.green,
+                                      foregroundColor: Colors.green,
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                style: TextButton.styleFrom(
-                                  iconColor: Colors.green,
-                                  foregroundColor: Colors.green,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () => _showDiscountForm(
+                                    discount: d,
+                                    index: index,
+                                  ),
+                                  icon: const Icon(TablerIcons.edit, size: 20, color: Colors.blue),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.blue.withValues(alpha: 0.05),
+                                    padding: const EdgeInsets.all(10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              onPressed: () => _showDiscountForm(
-                                discount: d,
-                                index: index,
-                              ),
-                              icon: const Icon(TablerIcons.edit, size: 20, color: Colors.blue),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.blue.withValues(alpha: 0.05),
-                                padding: const EdgeInsets.all(10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () => _confirmDelete(index),
+                                  icon: const Icon(TablerIcons.trash, size: 20, color: Colors.red),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.red.withValues(alpha: 0.05),
+                                    padding: const EdgeInsets.all(10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              onPressed: () => _confirmDelete(index),
-                              icon: const Icon(TablerIcons.trash, size: 20, color: Colors.red),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.red.withValues(alpha: 0.05),
-                                padding: const EdgeInsets.all(10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showDiscountForm(),
         backgroundColor: Warna.Primary,
