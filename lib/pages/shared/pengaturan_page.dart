@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:pos_mobile/KelolaTokoPage.dart';
+import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
 
 class PengaturanPage extends StatelessWidget {
   const PengaturanPage({super.key});

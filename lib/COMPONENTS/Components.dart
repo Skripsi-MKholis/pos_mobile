@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:pos_mobile/KosongPage.dart';
+import 'package:pos_mobile/pages/shared/kosong_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';

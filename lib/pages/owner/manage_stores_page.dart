@@ -4,7 +4,7 @@ import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
-import 'package:pos_mobile/KelolaTokoPage.dart';
+import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
 
 class ManageStoresPage extends StatefulWidget {
   const ManageStoresPage({super.key});

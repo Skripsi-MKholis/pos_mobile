@@ -1,25 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/KasirPage.dart';
-import 'package:pos_mobile/CheckoutPage.dart';
-import 'package:pos_mobile/LaporanPage.dart';
-import 'package:pos_mobile/PengaturanPage.dart';
-import 'package:pos_mobile/DashboardPage.dart';
-import 'package:pos_mobile/RiwayatTransaksiPage.dart';
+import 'package:pos_mobile/pages/auth/login_page.dart';
+import 'package:pos_mobile/pages/karyawan/kasir_page.dart';
+import 'package:pos_mobile/pages/owner/laporan_page.dart';
+import 'package:pos_mobile/pages/shared/pengaturan_page.dart';
+import 'package:pos_mobile/pages/karyawan/riwayat_transaksi_page.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/MenuPage.dart';
+import 'package:pos_mobile/pages/shared/menu_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:pos_mobile/KelolaTokoPage.dart';
-import 'package:pos_mobile/ManageStoresPage.dart';
+import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
+import 'package:pos_mobile/pages/owner/manage_stores_page.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String? _userRole;
+
+  void _login(String role) {
+    setState(() {
+      _userRole = role;
+    });
+  }
+
+  void _logout() {
+    setState(() {
+      _userRole = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +53,17 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.plusJakartaSansTextTheme(),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: _userRole == null
+          ? LoginPage(onLoginSuccess: _login)
+          : MainScreen(role: _userRole!, onLogout: _logout),
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final String role;
+  final VoidCallback onLogout;
+  const MainScreen({super.key, required this.role, required this.onLogout});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -62,12 +84,69 @@ class _MainScreenState extends State<MainScreen> {
     _selectedStore = _stores[0];
   }
 
-  static const List<Widget> _pages = <Widget>[
-    MenuPage(),
-    KasirPage(),
-    RiwayatTransaksiPage(),
-    PengaturanPage(),
-  ];
+  List<Map<String, dynamic>> _getNavItems() {
+    if (widget.role == 'Owner') {
+      return [
+        {
+          'icon': Icons.grid_view_rounded,
+          'text': 'Menu',
+          'page': MenuPage(role: widget.role),
+        },
+        {
+          'icon': Icons.bar_chart_rounded,
+          'text': 'Laporan',
+          'page': const LaporanPage(),
+        },
+        {
+          'icon': Icons.point_of_sale,
+          'text': 'Kasir',
+          'page': const KasirPage(),
+        },
+        {
+          'icon': Icons.settings,
+          'text': 'Setelan',
+          'page': const PengaturanPage(),
+        },
+      ];
+    } else if (widget.role == 'Karyawan') {
+      return [
+        {
+          'icon': Icons.point_of_sale,
+          'text': 'Kasir',
+          'page': const KasirPage(),
+        },
+        {
+          'icon': Icons.history,
+          'text': 'Riwayat',
+          'page': const RiwayatTransaksiPage(),
+        },
+        {
+          'icon': Icons.settings,
+          'text': 'Setelan',
+          'page': const PengaturanPage(),
+        },
+      ];
+    } else {
+      // Pelanggan
+      return [
+        {
+          'icon': Icons.shopping_basket_rounded,
+          'text': 'Katalog',
+          'page': MenuPage(role: widget.role),
+        },
+        {
+          'icon': Icons.history,
+          'text': 'Pesanan',
+          'page': const RiwayatTransaksiPage(),
+        },
+        {
+          'icon': Icons.person,
+          'text': 'Profil',
+          'page': const PengaturanPage(),
+        },
+      ];
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -145,7 +224,7 @@ class _MainScreenState extends State<MainScreen> {
                     // Navigate to profile page
                     break;
                   case 'logout':
-                    // Handle logout
+                    widget.onLogout();
                     break;
                 }
               },
@@ -400,64 +479,42 @@ class _MainScreenState extends State<MainScreen> {
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   children: [
-                    _buildDrawerItem(
-                      icon: Icons.grid_view_rounded,
-                      text: 'Menu Utama',
-                      isSelected: _selectedIndex == 0,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onItemTapped(0);
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.point_of_sale,
-                      text: 'Kasir',
-                      isSelected: _selectedIndex == 1,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onItemTapped(1);
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.history,
-                      text: 'Riwayat Transaksi',
-                      isSelected: _selectedIndex == 2,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onItemTapped(2);
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.settings_outlined,
-                      text: 'Pengaturan',
-                      isSelected: _selectedIndex == 3,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onItemTapped(3);
-                      },
-                    ),
+                    ..._getNavItems().asMap().entries.map((entry) {
+                      int idx = entry.key;
+                      var item = entry.value;
+                      return _buildDrawerItem(
+                        icon: item['icon'],
+                        text: item['text'],
+                        isSelected: _selectedIndex == idx,
+                        onTap: () {
+                          Navigator.pop(context);
+                          _onItemTapped(idx);
+                        },
+                      );
+                    }).toList(),
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 12,
+                    if (widget.role == 'Owner') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        child: Divider(color: Colors.grey[200], height: 1),
                       ),
-                      child: Divider(color: Colors.grey[200], height: 1),
-                    ),
-
-                    _buildDrawerItem(
-                      icon: Icons.store_mall_directory_outlined,
-                      text: 'Kelola Seluruh Toko',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ManageStoresPage(),
-                          ),
-                        );
-                      },
-                    ),
+                      _buildDrawerItem(
+                        icon: Icons.store_mall_directory_outlined,
+                        text: 'Kelola Seluruh Toko',
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ManageStoresPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
 
                     const Padding(
                       padding: EdgeInsets.only(left: 16, top: 4, bottom: 8),
@@ -506,6 +563,7 @@ class _MainScreenState extends State<MainScreen> {
                   textColor: Colors.red[400],
                   onTap: () {
                     Navigator.pop(context);
+                    widget.onLogout();
                   },
                 ),
               ),
@@ -513,7 +571,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      body: _pages[_selectedIndex],
+      body: _getNavItems()[_selectedIndex]['page'],
 
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -537,12 +595,9 @@ class _MainScreenState extends State<MainScreen> {
                 context,
               ).colorScheme.primary.withOpacity(0.1),
               color: Colors.grey[500],
-              tabs: const [
-                GButton(icon: Icons.grid_view_rounded, text: 'Menu'),
-                GButton(icon: Icons.point_of_sale, text: 'Kasir'),
-                GButton(icon: Icons.history, text: 'Riwayat'),
-                GButton(icon: Icons.settings, text: 'Setelan'),
-              ],
+              tabs: _getNavItems().map((item) {
+                return GButton(icon: item['icon'], text: item['text']);
+              }).toList(),
               selectedIndex: _selectedIndex,
               onTabChange: _onItemTapped,
             ),

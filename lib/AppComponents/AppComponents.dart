@@ -1,8 +1,8 @@
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/KosongPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pos_mobile/pages/shared/kosong_page.dart';
 
 Widget buildUserCard(
   BuildContext context,

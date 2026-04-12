@@ -5,7 +5,7 @@ import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_mobile/manage_categories_page.dart';
+import 'package:pos_mobile/pages/owner/manage_categories_page.dart';
 
 class ManageProductsPage extends StatefulWidget {
   const ManageProductsPage({super.key});

@@ -4,7 +4,7 @@ import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
-import 'package:pos_mobile/CheckoutPage.dart';
+import 'package:pos_mobile/pages/karyawan/checkout_page.dart';
 
 class KasirPage extends StatefulWidget {
   const KasirPage({super.key});

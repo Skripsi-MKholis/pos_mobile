@@ -4,17 +4,18 @@ import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
-import 'package:pos_mobile/KasirPage.dart';
-import 'package:pos_mobile/DashboardPage.dart';
-import 'package:pos_mobile/RiwayatTransaksiPage.dart';
-import 'package:pos_mobile/LaporanPage.dart';
-import 'package:pos_mobile/PengaturanPage.dart';
+import 'package:pos_mobile/pages/karyawan/kasir_page.dart';
+import 'package:pos_mobile/pages/shared/dashboard_page.dart';
+import 'package:pos_mobile/pages/karyawan/riwayat_transaksi_page.dart';
+import 'package:pos_mobile/pages/owner/laporan_page.dart';
+import 'package:pos_mobile/pages/shared/pengaturan_page.dart';
 import 'package:marquee/marquee.dart';
-import 'package:pos_mobile/KelolaTokoPage.dart';
-import 'package:pos_mobile/ManageProductsPage.dart';
+import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
+import 'package:pos_mobile/pages/owner/manage_products_page.dart';
 
 class MenuPage extends StatefulWidget {
-  const MenuPage({super.key});
+  final String role;
+  const MenuPage({super.key, this.role = 'Owner'});
 
   @override
   State<MenuPage> createState() => _MenuPageState();
@@ -59,95 +60,113 @@ class _MenuPageState extends State<MenuPage> {
               const SizedBox(height: 32),
 
               // Features Grid
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 2.2,
-                children: [
-                  _buildFeatureCard(
-                    title: 'Kasir (POS)',
-                    subtitle: 'Transaksi Penjualan',
-                    icon: Icons.point_of_sale_rounded,
-                    color: Warna.Primary,
-                    onTap: () {
-                      _navigateTo(context, const KasirPage());
+              Builder(
+                builder: (context) {
+                  final List<Map<String, dynamic>> allFeatures = [
+                    {
+                      'title': 'Kasir (POS)',
+                      'subtitle': 'Transaksi Penjualan',
+                      'icon': Icons.point_of_sale_rounded,
+                      'color': Warna.Primary,
+                      'onTap': () => _navigateTo(context, const KasirPage()),
+                      'roles': ['Owner', 'Karyawan'],
                     },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Dashboard',
-                    subtitle: 'Statistik & Ringkasan',
-                    icon: Icons.dashboard_rounded,
-                    color: Colors.blue[400]!,
-                    onTap: () {
-                      _navigateTo(context, const DashboardPage());
+                    {
+                      'title': 'Dashboard',
+                      'subtitle': 'Statistik & Ringkasan',
+                      'icon': Icons.dashboard_rounded,
+                      'color': Colors.blue[400]!,
+                      'onTap': () => _navigateTo(context, const DashboardPage()),
+                      'roles': ['Owner', 'Karyawan', 'Pelanggan'],
                     },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Riwayat',
-                    subtitle: 'Data Transaksi',
-                    icon: Icons.history_rounded,
-                    color: Colors.orange[400]!,
-                    onTap: () {
-                      _navigateTo(context, const RiwayatTransaksiPage());
+                    {
+                      'title': 'Riwayat',
+                      'subtitle': 'Data Transaksi',
+                      'icon': Icons.history_rounded,
+                      'color': Colors.orange[400]!,
+                      'onTap': () => _navigateTo(context, const RiwayatTransaksiPage()),
+                      'roles': ['Owner', 'Karyawan', 'Pelanggan'],
                     },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Laporan',
-                    subtitle: 'Laporan Penjualan',
-                    icon: Icons.bar_chart_rounded,
-                    color: Colors.purple[400]!,
-                    onTap: () {
-                      _navigateTo(context, const LaporanPage());
+                    {
+                      'title': 'Laporan',
+                      'subtitle': 'Laporan Penjualan',
+                      'icon': Icons.bar_chart_rounded,
+                      'color': Colors.purple[400]!,
+                      'onTap': () => _navigateTo(context, const LaporanPage()),
+                      'roles': ['Owner'],
                     },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Produk',
-                    subtitle: 'Kelola Stok & Barang',
-                    icon: Icons.inventory_2_rounded,
-                    color: Colors.green[400]!,
-                    onTap: () {
-                      _navigateTo(context, const ManageProductsPage());
+                    {
+                      'title': 'Produk',
+                      'subtitle': 'Kelola Stok & Barang',
+                      'icon': Icons.inventory_2_rounded,
+                      'color': Colors.green[400]!,
+                      'onTap': () => _navigateTo(context, const ManageProductsPage()),
+                      'roles': ['Owner', 'Karyawan'],
                     },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Pelanggan',
-                    subtitle: 'Data Member',
-                    icon: Icons.people_alt_rounded,
-                    color: Colors.pink[400]!,
-                    onTap: () {
-                      MySnackBar(
-                        context: context,
-                        text: 'Fitur Manajemen Pelanggan segera hadir',
-                        status: ToastStatus.info,
+                    {
+                      'title': 'Pelanggan',
+                      'subtitle': 'Data Member',
+                      'icon': Icons.people_alt_rounded,
+                      'color': Colors.pink[400]!,
+                      'onTap': () {
+                        MySnackBar(
+                          context: context,
+                          text: 'Fitur Manajemen Pelanggan segera hadir',
+                          status: ToastStatus.info,
+                        );
+                      },
+                      'roles': ['Owner'],
+                    },
+                    {
+                      'title': 'Pengaturan',
+                      'subtitle': 'Konfigurasi Aplikasi',
+                      'icon': Icons.settings_rounded,
+                      'color': Colors.blueGrey[400]!,
+                      'onTap': () => _navigateTo(context, const PengaturanPage()),
+                      'roles': ['Owner', 'Karyawan'],
+                    },
+                    {
+                      'title': 'Profil',
+                      'subtitle': 'Info Akun',
+                      'icon': Icons.person_rounded,
+                      'color': Colors.teal[400]!,
+                      'onTap': () {
+                        MySnackBar(
+                          context: context,
+                          text: 'Menuju Profil ${widget.role}',
+                          status: ToastStatus.info,
+                        );
+                      },
+                      'roles': ['Owner', 'Karyawan', 'Pelanggan'],
+                    },
+                  ];
+
+                  final filteredFeatures = allFeatures
+                      .where((f) => (f['roles'] as List).contains(widget.role))
+                      .toList();
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 2.2,
+                    ),
+                    itemCount: filteredFeatures.length,
+                    itemBuilder: (context, index) {
+                      final f = filteredFeatures[index];
+                      return _buildFeatureCard(
+                        title: f['title'],
+                        subtitle: f['subtitle'],
+                        icon: f['icon'],
+                        color: f['color'],
+                        onTap: f['onTap'],
                       );
                     },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Pengaturan',
-                    subtitle: 'Konfigurasi Aplikasi',
-                    icon: Icons.settings_rounded,
-                    color: Colors.blueGrey[400]!,
-                    onTap: () {
-                      _navigateTo(context, const PengaturanPage());
-                    },
-                  ),
-                  _buildFeatureCard(
-                    title: 'Profil',
-                    subtitle: 'Info Akun',
-                    icon: Icons.person_rounded,
-                    color: Colors.teal[400]!,
-                    onTap: () {
-                      MySnackBar(
-                        context: context,
-                        text: 'Menuju Profil Admin',
-                        status: ToastStatus.info,
-                      );
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
               const SizedBox(height: 40),
 
