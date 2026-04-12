@@ -6,6 +6,7 @@ import 'package:tabler_icons/tabler_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:intl/intl.dart';
+import 'package:pos_mobile/pages/owner/prediksi_page.dart';
 
 class LaporanPage extends StatefulWidget {
   const LaporanPage({super.key});
@@ -422,10 +423,11 @@ class _LaporanPageState extends State<LaporanPage> {
               const SizedBox(height: 20),
               myButtonPrimary(
                 onPressed: () {
-                  MySnackBar(
-                    context: context,
-                    text: 'Halaman Prediksi Penjualan segera hadir!',
-                    status: ToastStatus.info,
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrediksiPage(),
+                    ),
                   );
                 },
                 backgroundColor: Warna.Primary,
