@@ -74,9 +74,11 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
   List<Map<String, dynamic>> get filteredProducts {
     return products.where((product) {
       final matchesCategory =
-          _selectedCategory == 'Semua' || product['category'] == _selectedCategory;
-      final matchesSearch =
-          product['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+          _selectedCategory == 'Semua' ||
+          product['category'] == _selectedCategory;
+      final matchesSearch = product['name'].toString().toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
       return matchesCategory && matchesSearch;
     }).toList();
   }
@@ -122,7 +124,8 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
     Navigator.pop(context);
     MySnackBar(
       context: context,
-      text: 'Diskon berhasil diterapkan ke ${_selectedProductIndices.length} produk',
+      text:
+          'Diskon berhasil diterapkan ke ${_selectedProductIndices.length} produk',
       status: ToastStatus.success,
     );
   }
@@ -140,10 +143,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
 
     return Scaffold(
       backgroundColor: Warna.BG,
-      appBar: MyAppBar(
-        title: 'Terapkan Diskon',
-        isCenter: true,
-      ),
+      appBar: MyAppBar(title: 'Terapkan Diskon', isCenter: true),
       body: Column(
         children: [
           // Selected Discount Info
@@ -163,7 +163,11 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(TablerIcons.discount_2, color: Warna.Primary, size: 24),
+                  child: Icon(
+                    TablerIcons.discount_2,
+                    color: Warna.Primary,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -222,7 +226,9 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                               color: isSel ? Warna.Primary : Colors.white,
                               borderRadius: BorderRadius.circular(18),
                               border: Border.all(
-                                color: isSel ? Warna.Primary : Colors.grey[300]!,
+                                color: isSel
+                                    ? Warna.Primary
+                                    : Colors.grey[300]!,
                               ),
                             ),
                             child: Text(
@@ -248,13 +254,18 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
             child: filteredProducts.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
                       // Find original index in mock list for selection logic
                       final originalIndex = products.indexOf(product);
-                      final isSelected = _selectedProductIndices.contains(originalIndex);
+                      final isSelected = _selectedProductIndices.contains(
+                        originalIndex,
+                      );
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 10),
@@ -270,7 +281,8 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                         ),
                         child: CheckboxListTile(
                           value: isSelected,
-                          onChanged: (val) => _toggleProductSelection(originalIndex),
+                          onChanged: (val) =>
+                              _toggleProductSelection(originalIndex),
                           activeColor: Warna.Primary,
                           checkboxShape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),

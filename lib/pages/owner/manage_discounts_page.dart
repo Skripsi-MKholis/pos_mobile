@@ -139,9 +139,9 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                               ),
                             ),
                             Text(
-                              isActive ? 'Aktif' : 'Non-aktif',
+                              isActive ? 'Aktif - Promo ini akan muncul di pembayaran' : 'Non-aktif - Promo ini disembunyikan',
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
+                                fontSize: 11,
                                 color: isActive ? Colors.green : Colors.grey,
                               ),
                             ),
@@ -278,99 +278,151 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                     : currencyFormat.format(d['value']);
 
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: isActive
-                              ? Warna.Primary.withValues(alpha: 0.1)
-                              : Colors.grey[100],
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          TablerIcons.discount_2,
-                          color: isActive ? Warna.Primary : Colors.grey,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
                           children: [
-                            Text(
-                              d['name'],
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: isActive ? Colors.black : Colors.grey,
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isActive
+                                    ? Warna.Primary.withValues(alpha: 0.1)
+                                    : Colors.grey[100],
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                TablerIcons.discount_2,
+                                color: isActive ? Warna.Primary : Colors.grey,
+                                size: 24,
                               ),
                             ),
-                            Text(
-                              valueDisplay,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                color: isActive ? Warna.Primary : Colors.grey,
-                                fontWeight: FontWeight.w600,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          d['name'],
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: isActive ? Colors.black : Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: isActive ? Colors.green.withValues(alpha: 0.1) : Colors.grey[200],
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          isActive ? 'Aktif' : 'Non-aktif',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: isActive ? Colors.green : Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    valueDisplay,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14,
+                                      color: isActive ? Warna.Primary : Colors.grey,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              TablerIcons.square_check,
-                              color: Colors.green,
-                              size: 20,
-                            ),
-                            tooltip: 'Terapkan ke Produk',
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ApplyDiscountPage(
-                                    selectedDiscount: d,
+                      const Divider(height: 1, thickness: 0.5),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ApplyDiscountPage(
+                                        selectedDiscount: d,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(TablerIcons.checkbox, size: 18),
+                                label: Text(
+                                  'Terapkan ke Produk',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              TablerIcons.edit,
-                              color: Colors.blue,
-                              size: 20,
+                                style: TextButton.styleFrom(
+                                  iconColor: Colors.green,
+                                  foregroundColor: Colors.green,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: () => _showDiscountForm(
-                              discount: d,
-                              index: index,
+                            const SizedBox(width: 8),
+                            IconButton(
+                              onPressed: () => _showDiscountForm(
+                                discount: d,
+                                index: index,
+                              ),
+                              icon: const Icon(TablerIcons.edit, size: 20, color: Colors.blue),
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.blue.withValues(alpha: 0.05),
+                                padding: const EdgeInsets.all(10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              TablerIcons.trash,
-                              color: Colors.red,
-                              size: 20,
+                            const SizedBox(width: 8),
+                            IconButton(
+                              onPressed: () => _confirmDelete(index),
+                              icon: const Icon(TablerIcons.trash, size: 20, color: Colors.red),
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.red.withValues(alpha: 0.05),
+                                padding: const EdgeInsets.all(10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
                             ),
-                            onPressed: () => _confirmDelete(index),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
