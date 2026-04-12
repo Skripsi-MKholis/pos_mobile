@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
+import 'package:pos_mobile/pages/owner/apply_category_page.dart';
 
 class ManageCategoriesPage extends StatefulWidget {
   final List<String> currentCategories;
@@ -208,6 +209,23 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                       ),
                       Row(
                         children: [
+                          IconButton(
+                            icon: const Icon(
+                              TablerIcons.playlist_add,
+                              color: Colors.green,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ApplyCategoryPage(
+                                    categoryName: categories[index],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           IconButton(
                             icon: const Icon(
                               TablerIcons.edit,
