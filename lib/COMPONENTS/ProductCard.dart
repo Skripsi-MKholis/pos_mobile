@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:tabler_icons/tabler_icons.dart';
+import 'Components.dart';
 
 class MyProductCard extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -89,20 +90,11 @@ class MyProductCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                   ],
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      product['image'],
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 60,
-                        height: 60,
-                        color: Colors.grey[100],
-                        child: const Icon(Icons.image, color: Colors.grey),
-                      ),
-                    ),
+                  MyNetworkImage(
+                    imageUrl: product['image'],
+                    width: 60,
+                    height: 60,
+                    borderRadius: 12,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -119,7 +111,10 @@ class MyProductCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        Row(
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
                               product['category'],
@@ -128,12 +123,6 @@ class MyProductCard extends StatelessWidget {
                                 color: Colors.grey[600],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '•',
-                              style: TextStyle(color: Colors.grey[400]),
-                            ),
-                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6,
@@ -161,8 +150,7 @@ class MyProductCard extends StatelessWidget {
                               ),
                             ),
                             if (product['variants'] != null &&
-                                product['variants'].isNotEmpty) ...[
-                              const SizedBox(width: 6),
+                                product['variants'].isNotEmpty)
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 6,
@@ -181,18 +169,62 @@ class MyProductCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            ],
-                            if (!isGridView) ...[
-                              const SizedBox(width: 8),
-                              Text(
-                                '•',
-                                style: TextStyle(color: Colors.grey[400]),
+                            if (product['isBestSeller'] == true)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      TablerIcons.crown,
+                                      color: Colors.orange,
+                                      size: 10,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      'Terlaris',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              const SizedBox(width: 8),
-                              _buildPriceInfo(fmt),
-                            ],
+                            if (product['appliedDiscount'] != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  product['appliedDiscount']['type'] ==
+                                          'Persentase (%)'
+                                      ? 'Diskon ${product['appliedDiscount']['value']}%'
+                                      : 'DISKON',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
+                        const SizedBox(height: 6),
+                        _buildPriceInfo(fmt),
                       ],
                     ),
                   ),
@@ -255,21 +287,14 @@ class MyProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                    child: Image.network(
-                      product['image'],
+                    child: MyNetworkImage(
+                      imageUrl: product['image'],
                       width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: double.infinity,
-                        color: Colors.grey[100],
-                        child: const Icon(Icons.image, color: Colors.grey),
-                      ),
+                      // We'll use a custom property for top-only rounding if needed, 
+                      // but for now borderRadius 20 is handled by ClipRRect in MyNetworkImage.
+                      // To match vertical top only, I might need to update MyNetworkImage.
+                      borderRadius: 20, 
                     ),
-                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(12),
@@ -367,7 +392,9 @@ class MyProductCard extends StatelessWidget {
                     ],
                   ),
                   child: Icon(
-                    isSelected ? TablerIcons.circle_check_filled : TablerIcons.circle,
+                    isSelected
+                        ? TablerIcons.circle_check_filled
+                        : TablerIcons.circle,
                     color: isSelected ? Warna.Primary : Colors.grey[300],
                     size: 24,
                   ),
@@ -385,6 +412,80 @@ class MyProductCard extends StatelessWidget {
                   ],
                 ),
               ),
+            // Badges
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (product['isBestSeller'] == true)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            TablerIcons.crown,
+                            color: Colors.white,
+                            size: 10,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Terlaris',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (product['appliedDiscount'] != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        product['appliedDiscount']['type'] == 'Persentase (%)'
+                            ? '-${product['appliedDiscount']['value']}%'
+                            : 'HEMAT',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

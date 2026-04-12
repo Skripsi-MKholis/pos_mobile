@@ -63,6 +63,7 @@ class _KasirPageState extends State<KasirPage> {
       'category': 'Minuman',
       'stock': 50,
       'isInfiniteStock': false,
+      'isBestSeller': true,
       'variants': [
         {
           'name': 'Ukuran',
@@ -94,6 +95,11 @@ class _KasirPageState extends State<KasirPage> {
       'category': 'Minuman',
       'stock': 100,
       'isInfiniteStock': true,
+      'appliedDiscount': {
+        'name': 'Promo Heboh',
+        'type': 'Persentase (%)',
+        'value': 15,
+      },
       'variants': [],
     },
     {
@@ -103,6 +109,7 @@ class _KasirPageState extends State<KasirPage> {
       'category': 'Minuman',
       'stock': 30,
       'isInfiniteStock': false,
+      'isBestSeller': true,
       'variants': [
         {
           'name': 'Suhu',
@@ -123,6 +130,11 @@ class _KasirPageState extends State<KasirPage> {
       'category': 'Makanan',
       'stock': 20,
       'isInfiniteStock': false,
+      'appliedDiscount': {
+        'name': 'Flash Sale',
+        'type': 'Nominal (Rp)',
+        'value': 2000,
+      },
       'variants': [],
     },
     {
@@ -132,6 +144,7 @@ class _KasirPageState extends State<KasirPage> {
       'category': 'Snack',
       'stock': 40,
       'isInfiniteStock': false,
+      'isBestSeller': false,
       'variants': [
         {
           'name': 'Bumbu',
@@ -244,9 +257,8 @@ class _KasirPageState extends State<KasirPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CheckoutPage(
-                          cartItems: selectedItems,
-                        ),
+                        builder: (context) =>
+                            CheckoutPage(cartItems: selectedItems),
                       ),
                     );
                   },
@@ -335,15 +347,18 @@ class _KasirPageState extends State<KasirPage> {
           Expanded(
             child: _isGridView
                 ? GridView.builder(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, bottom: 85),
+                    padding: const EdgeInsets.only(
+                      left: 10,
+                      right: 10,
+                      bottom: 85,
+                    ),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.72,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.72,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
@@ -351,8 +366,11 @@ class _KasirPageState extends State<KasirPage> {
                     },
                   )
                 : ListView.builder(
-                    padding:
-                        const EdgeInsets.only(left: 15, right: 15, bottom: 85),
+                    padding: const EdgeInsets.only(
+                      left: 15,
+                      right: 15,
+                      bottom: 85,
+                    ),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
@@ -428,11 +446,16 @@ class _KasirPageState extends State<KasirPage> {
       } else {
         _cart[key] = {
           'name': product['name'],
-          'price': product['price'],
-          'totalPrice': customPrice ?? product['price'],
+          'price': product['price'], // Original price
+          'totalPrice':
+              customPrice ??
+              product['price'], // Final price after all adjustments
           'image': product['image'],
           'qty': 1,
           'selectedOptions': selectedOptions ?? [],
+          'appliedDiscount': product['appliedDiscount'],
+          'stock': product['stock'],
+          'isInfiniteStock': product['isInfiniteStock'],
         };
       }
     });
@@ -537,14 +560,11 @@ class _KasirPageState extends State<KasirPage> {
                     ),
                     child: Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            product['image'],
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
+                        MyNetworkImage(
+                          imageUrl: product['image'],
+                          width: 50,
+                          height: 50,
+                          borderRadius: 8,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -609,13 +629,15 @@ class _KasirPageState extends State<KasirPage> {
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
-                              children:
-                                  (variant['options'] as List).map((option) {
+                              children: (variant['options'] as List).map((
+                                option,
+                              ) {
                                 bool isSelected = false;
                                 if (variant['allowMultiple']) {
-                                  isSelected = (selectedOptionsMap[variant['name']]
-                                          as List)
-                                      .contains(option);
+                                  isSelected =
+                                      (selectedOptionsMap[variant['name']]
+                                              as List)
+                                          .contains(option);
                                 } else {
                                   isSelected =
                                       selectedOptionsMap[variant['name']] ==

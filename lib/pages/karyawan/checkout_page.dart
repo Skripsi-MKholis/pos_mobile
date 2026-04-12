@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:intl/intl.dart';
 
 class CheckoutPage extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -25,9 +26,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   double get totalPrice {
-    return items.fold(
-        0, (sum, item) => sum + ((item['totalPrice'] ?? item['price']) * item['qty']));
+    return items.fold(0, (sum, item) => sum + (item['totalPrice'] * item['qty']));
   }
+
+  final NumberFormat _fmt = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +65,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 final item = items[index];
                 return _buildCartItem(
                   index: index,
-                  name: item['name'],
-                  price: (item['totalPrice'] ?? item['price']).toDouble(),
-                  qty: item['qty'],
-                  imageUrl: item['image'],
-                  selectedOptions: item['selectedOptions'] as List<dynamic>?,
+                  item: item,
                 );
               },
             ),
@@ -95,7 +97,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ),
                       ),
                       Text(
-                        'Rp ${totalPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                        _fmt.format(totalPrice),
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -130,44 +132,44 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Widget _buildCartItem({
     required int index,
-    required String name,
-    required double price,
-    required int qty,
-    required String imageUrl,
-    List<dynamic>? selectedOptions,
+    required Map<String, dynamic> item,
   }) {
+    final String name = item['name'];
+    final double totalPrice = (item['totalPrice'] ?? item['price']).toDouble();
+    final double originalPrice = (item['price'] ?? 0).toDouble();
+    final int qty = item['qty'];
+    final String imageUrl = item['image'];
+    final List<dynamic>? selectedOptions =
+        item['selectedOptions'] as List<dynamic>?;
+    final Map<String, dynamic>? discount =
+        item['appliedDiscount'] as Map<String, dynamic>?;
+    final int? stock = item['stock'] as int?;
+    final bool isInfiniteStock = item['isInfiniteStock'] == true;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
-            blurRadius: 5,
-            spreadRadius: 1,
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              imageUrl,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                width: 70,
-                height: 70,
-                color: Colors.grey[200],
-                child: const Icon(Icons.image, color: Colors.grey),
-              ),
-            ),
+          MyNetworkImage(
+            imageUrl: imageUrl,
+            width: 80,
+            height: 80,
+            borderRadius: 12,
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,79 +177,147 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Text(
                   name,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (selectedOptions != null && selectedOptions.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    selectedOptions.map((o) => o['name']).join(', '),
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+                Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: (stock ?? 0) > 0 || isInfiniteStock
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.red.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        isInfiniteStock ? 'Stok: ∞' : 'Stok: $stock',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: (stock ?? 0) > 0 || isInfiniteStock
+                              ? Colors.green[700]
+                              : Colors.red[700],
+                        ),
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                const SizedBox(height: 5),
-                Text(
-                  'Rp ${price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    color: Warna.Primary,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    if (selectedOptions != null && selectedOptions.isNotEmpty)
+                      ...selectedOptions.map((o) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            o['name'],
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        );
+                      }),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (discount != null)
+                          Text(
+                            _fmt.format(originalPrice),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              color: Colors.grey[400],
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                        Text(
+                          _fmt.format(totalPrice),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 15,
+                            color: Warna.Primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    _buildQuantityControl(index, qty),
+                  ],
                 ),
               ],
             ),
-          ),
-          Row(
-            children: [
-              _buildQtyButton(TablerIcons.minus, () {
-                setState(() {
-                  if (items[index]['qty'] > 1) {
-                    items[index]['qty']--;
-                  } else {
-                    items.removeAt(index);
-                  }
-                });
-              }),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  qty.toString(),
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              _buildQtyButton(TablerIcons.plus, () {
-                setState(() {
-                  items[index]['qty']++;
-                });
-              }),
-            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQtyButton(IconData icon, VoidCallback onTap) {
-    return InkWell(
+  Widget _buildQuantityControl(int index, int qty) {
+    return Row(
+      children: [
+        _buildQtyButton(TablerIcons.minus, () {
+          setState(() {
+            if (items[index]['qty'] > 1) {
+              items[index]['qty']--;
+            } else {
+              items.removeAt(index);
+            }
+          });
+        }, isNegative: true),
+        Container(
+          constraints: const BoxConstraints(minWidth: 30),
+          alignment: Alignment.center,
+          child: Text(
+            qty.toString(),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        _buildQtyButton(TablerIcons.plus, () {
+          setState(() {
+            items[index]['qty']++;
+          });
+        }),
+      ],
+    );
+  }
+
+  Widget _buildQtyButton(IconData icon, VoidCallback onTap,
+      {bool isNegative = false}) {
+    return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Warna.Primary.withOpacity(0.1),
+          color: isNegative
+              ? Colors.red.withValues(alpha: 0.1)
+              : Warna.Primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, size: 20, color: Warna.Primary),
+        child: Icon(
+          icon,
+          size: 16,
+          color: isNegative ? Colors.red : Warna.Primary,
+        ),
       ),
     );
   }
