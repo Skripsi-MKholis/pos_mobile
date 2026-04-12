@@ -93,14 +93,14 @@ class _MainScreenState extends State<MainScreen> {
           'page': MenuPage(role: widget.role),
         },
         {
-          'icon': Icons.bar_chart_rounded,
-          'text': 'Laporan',
-          'page': const LaporanPage(),
-        },
-        {
           'icon': Icons.point_of_sale,
           'text': 'Kasir',
           'page': const KasirPage(),
+        },
+        {
+          'icon': Icons.bar_chart_rounded,
+          'text': 'Laporan',
+          'page': const LaporanPage(),
         },
         {
           'icon': Icons.settings,
