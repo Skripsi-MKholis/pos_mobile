@@ -28,40 +28,52 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
   // Dummy initial products (In a real app, this would come from a database/API)
   List<Map<String, dynamic>> products = [
     {
-      'name': 'Kopi Susu Gula Aren oakwokawokaowkoakwoakwokaokwoakwok',
+      'name': 'Kopi Susu Gula Aren',
       'price': 18000,
+      'modalPrice': 12000,
       'image': 'https://via.placeholder.com/150',
       'category': 'Minuman',
+      'stock': 50,
+      'isInfiniteStock': false,
+      'barcode': '8991234567',
+      'description': 'Kopi Susu segar dengan gula aren murni.',
+      'variants': [],
     },
     {
       'name': 'Americano',
       'price': 15000,
+      'modalPrice': 8000,
       'image': 'https://via.placeholder.com/150',
       'category': 'Minuman',
+      'stock': 100,
+      'isInfiniteStock': true,
+      'barcode': '8991234568',
+      'description': 'Kopi hitam murni tanpa ampas.',
+      'variants': [],
     },
     {
       'name': 'Matcha Latte',
       'price': 22000,
+      'modalPrice': 15000,
       'image': 'https://via.placeholder.com/150',
       'category': 'Minuman',
+      'stock': 30,
+      'isInfiniteStock': false,
+      'barcode': '8991234569',
+      'description': 'Bubuk matcha berkualitas dengan susu creamy.',
+      'variants': [],
     },
     {
       'name': 'Roti Bakar Coklat',
       'price': 15000,
+      'modalPrice': 10000,
       'image': 'https://via.placeholder.com/150',
       'category': 'Makanan',
-    },
-    {
-      'name': 'Kentang Goreng',
-      'price': 12000,
-      'image': 'https://via.placeholder.com/150',
-      'category': 'Snack',
-    },
-    {
-      'name': 'Dimsum Ayam',
-      'price': 15000,
-      'image': 'https://via.placeholder.com/150',
-      'category': 'Snack',
+      'stock': 20,
+      'isInfiniteStock': false,
+      'barcode': '8991234570',
+      'description': 'Roti bakar dengan selai coklat melimpah.',
+      'variants': [],
     },
   ];
 
@@ -109,66 +121,175 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
     final priceController = TextEditingController(
       text: product?['price']?.toString() ?? '',
     );
-    String currentCategory = product?['category'] ?? 'Minuman';
-    final imageController = TextEditingController(
-      text: product?['image'] ?? 'https://via.placeholder.com/150',
+    final modalPriceController = TextEditingController(
+      text: product?['modalPrice']?.toString() ?? '',
     );
+    final stockController = TextEditingController(
+      text: product?['stock']?.toString() ?? '',
+    );
+    final barcodeController = TextEditingController(
+      text: product?['barcode'] ?? '',
+    );
+    final descriptionController = TextEditingController(
+      text: product?['description'] ?? '',
+    );
+
+    String currentCategory = product?['category'] ?? 'Minuman';
+    String? currentImage = product?['image'];
+    bool isInfiniteStock = product?['isInfiniteStock'] ?? false;
+    List<Map<String, dynamic>> productVariants =
+        product?['variants'] != null
+            ? List<Map<String, dynamic>>.from(
+              (product!['variants'] as List).map(
+                (v) => Map<String, dynamic>.from(v),
+              ),
+            )
+            : [];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero, // Fullscreen style
+      ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Container(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 20,
-                left: 20,
-                right: 20,
+            return Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(TablerIcons.x, color: Colors.black),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                title: Text(
+                  product == null ? 'Tambah Produk' : 'Edit Produk',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                ),
+                centerTitle: true,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      if (nameController.text.isEmpty ||
+                          priceController.text.isEmpty) {
+                        MySnackBar(
+                          context: context,
+                          text: 'Nama dan harga jual harus diisi!',
+                          status: ToastStatus.error,
+                        );
+                        return;
+                      }
+
+                      final newProduct = {
+                        'name': nameController.text,
+                        'price': int.tryParse(priceController.text) ?? 0,
+                        'modalPrice':
+                            int.tryParse(modalPriceController.text) ?? 0,
+                        'category': currentCategory,
+                        'image':
+                            currentImage ?? 'https://via.placeholder.com/150',
+                        'stock':
+                            isInfiniteStock
+                                ? 0
+                                : int.tryParse(stockController.text) ?? 0,
+                        'isInfiniteStock': isInfiniteStock,
+                        'barcode': barcodeController.text,
+                        'description': descriptionController.text,
+                        'variants': productVariants,
+                      };
+
+                      setState(() {
+                        if (product == null) {
+                          products.add(newProduct);
+                          MySnackBar(
+                            context: context,
+                            text: 'Produk berhasil ditambahkan',
+                            status: ToastStatus.success,
+                          );
+                        } else {
+                          products[index!] = newProduct;
+                          MySnackBar(
+                            context: context,
+                            text: 'Produk berhasil diperbarui',
+                            status: ToastStatus.success,
+                          );
+                        }
+                      });
+
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Simpan',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.bold,
+                        color: Warna.Primary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              child: SingleChildScrollView(
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
+                    // Image Upload Placeholder
+                    myInputFile(
+                      labelText: 'Foto Produk',
+                      fileName:
+                          currentImage != null ? 'Gambar terpilih' : null,
+                      onTap: () {
+                        // In a real app, use image_picker here
+                        setModalState(() {
+                          currentImage = 'https://via.placeholder.com/150';
+                        });
+                        MySnackBar(
+                          context: context,
+                          text: 'Gambar dipilih (Placeholder)',
+                          status: ToastStatus.info,
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      product == null ? 'Tambah Produk' : 'Edit Produk',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+
                     myTextField(
                       controller: nameController,
-                      placeholder: 'Nama Produk',
+                      placeholder: 'Contoh: Kopi Susu',
                       labelText: 'Nama Produk',
                     ),
                     const SizedBox(height: 16),
-                    myTextField(
-                      controller: priceController,
-                      placeholder: 'Harga (Contoh: 15000)',
-                      labelText: 'Harga',
-                      keyboardType: TextInputType.number,
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: myTextField(
+                            controller: priceController,
+                            placeholder: '0',
+                            labelText: 'Harga Jual',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: myTextField(
+                            controller: modalPriceController,
+                            placeholder: '0',
+                            labelText: 'Harga Modal',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
+
                     mySelectField(
                       labelText: 'Kategori',
                       selectedValue: currentCategory,
@@ -181,60 +302,189 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         }
                       },
                     ),
-                    const SizedBox(height: 16),
-                    myTextField(
-                      controller: imageController,
-                      placeholder: 'URL Gambar',
-                      labelText: 'Link Gambar (Opsional)',
-                    ),
-                    const SizedBox(height: 32),
-                    myButtonPrimary(
-                      onPressed: () {
-                        if (nameController.text.isEmpty ||
-                            priceController.text.isEmpty) {
-                          MySnackBar(
-                            context: context,
-                            text: 'Nama dan harga harus diisi!',
-                            status: ToastStatus.error,
-                          );
-                          return;
-                        }
-
-                        final newProduct = {
-                          'name': nameController.text,
-                          'price': int.tryParse(priceController.text) ?? 0,
-                          'category': currentCategory,
-                          'image': imageController.text,
-                        };
-
-                        setState(() {
-                          if (product == null) {
-                            products.add(newProduct);
-                            MySnackBar(
-                              context: context,
-                              text: 'Produk berhasil ditambahkan',
-                              status: ToastStatus.success,
-                            );
-                          } else {
-                            products[index!] = newProduct;
-                            MySnackBar(
-                              context: context,
-                              text: 'Produk berhasil diperbarui',
-                              status: ToastStatus.success,
-                            );
-                          }
-                        });
-
-                        Navigator.pop(context);
-                      },
-                      backgroundColor: Warna.Primary,
-                      foregroundColor: Colors.white,
-                      child: Text(
-                        product == null ? 'Simpan Produk' : 'Update Produk',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
                     const SizedBox(height: 20),
+
+                    // Stock Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Stok Tak Terbatas',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Switch(
+                          value: isInfiniteStock,
+                          activeColor: Warna.Primary,
+                          onChanged: (val) {
+                            setModalState(() {
+                              isInfiniteStock = val;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    if (!isInfiniteStock)
+                      myTextField(
+                        controller: stockController,
+                        placeholder: '0',
+                        labelText: 'Jumlah Stok',
+                        keyboardType: TextInputType.number,
+                      ),
+                    const SizedBox(height: 16),
+
+                    // Barcode Section
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: myTextField(
+                            controller: barcodeController,
+                            placeholder: 'Barcode / SKU',
+                            labelText: 'Barcode',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 2),
+                          height: 48,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              final timestamp =
+                                  DateTime.now().millisecondsSinceEpoch.toString();
+                              barcodeController.text =
+                                  timestamp.substring(timestamp.length - 10);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Warna.Primary.withOpacity(0.1),
+                              foregroundColor: Warna.Primary,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            icon: const Icon(TablerIcons.refresh, size: 18),
+                            label: const Text('Auto'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    myTextField(
+                      controller: descriptionController,
+                      placeholder: 'Tulis deskripsi produk...',
+                      labelText: 'Deskripsi (Opsional)',
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Variants Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Varian Produk',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _showVariantForm(
+                            context: context,
+                            onSave: (newVariant) {
+                              setModalState(() {
+                                productVariants.add(newVariant);
+                              });
+                            },
+                          ),
+                          icon: const Icon(TablerIcons.plus, size: 18),
+                          label: const Text('Tambah Varian'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Warna.Primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    if (productVariants.isEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Warna.BG,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey[200]!),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Belum ada varian',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.grey[500],
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: productVariants.length,
+                        itemBuilder: (context, vIndex) {
+                          final variant = productVariants[vIndex];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        variant['name'],
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${variant['options'].length} Opsi • ${variant['priceType']}',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setModalState(() {
+                                      productVariants.removeAt(vIndex);
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    TablerIcons.trash,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -245,6 +495,261 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
     ).whenComplete(() {
       _isFormOpen = false;
     });
+  }
+
+  void _showVariantForm({
+    required BuildContext context,
+    required Function(Map<String, dynamic>) onSave,
+  }) {
+    final variantNameController = TextEditingController();
+    bool isRequired = false;
+    bool allowMultiple = false;
+    String priceType = 'Tambah Harga'; // Default
+    List<Map<String, dynamic>> options = [];
+
+    // Helper to add option
+    void _addOption(StateSetter setVState) {
+      final nameCtrl = TextEditingController();
+      final priceCtrl = TextEditingController();
+      setVState(() {
+        options.add({
+          'controller_name': nameCtrl,
+          'controller_price': priceCtrl,
+        });
+      });
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setVState) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(TablerIcons.arrow_left, color: Colors.black),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                title: Text(
+                  'Tambah Varian',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                ),
+                centerTitle: true,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      if (variantNameController.text.isEmpty) {
+                        MySnackBar(
+                          context: context,
+                          text: 'Nama varian harus diisi!',
+                          status: ToastStatus.error,
+                        );
+                        return;
+                      }
+                      if (options.isEmpty) {
+                        MySnackBar(
+                          context: context,
+                          text: 'Minimal tambah 1 opsi!',
+                          status: ToastStatus.error,
+                        );
+                        return;
+                      }
+
+                      final finalOptions =
+                          options.map((opt) {
+                            return {
+                              'name': (opt['controller_name'] as TextEditingController).text,
+                              'price': int.tryParse((opt['controller_price'] as TextEditingController).text) ?? 0,
+                            };
+                          }).toList();
+
+                      onSave({
+                        'name': variantNameController.text,
+                        'isRequired': isRequired,
+                        'allowMultiple': allowMultiple,
+                        'priceType': priceType,
+                        'options': finalOptions,
+                      });
+
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Simpan',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.bold,
+                        color: Warna.Primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    myTextField(
+                      controller: variantNameController,
+                      placeholder: 'Contoh: Ukuran atau Topping',
+                      labelText: 'Nama Varian',
+                    ),
+                    const SizedBox(height: 20),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Wajib Dipilih',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Switch(
+                          value: isRequired,
+                          activeColor: Warna.Primary,
+                          onChanged: (val) => setVState(() => isRequired = val),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Bisa Pilih Banyak',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Switch(
+                          value: allowMultiple,
+                          activeColor: Warna.Primary,
+                          onChanged: (val) => setVState(() => allowMultiple = val),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    mySelectField(
+                      labelText: 'Tipe Harga',
+                      selectedValue: priceType,
+                      items: ['Tambah Harga', 'Ganti Harga Utama'],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setVState(() => priceType = val);
+                        }
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      child: Text(
+                        priceType == 'Tambah Harga'
+                            ? 'Harga opsi akan ditambahkan ke harga produk utama (Contoh: +Rp 5.000)'
+                            : 'Harga opsi akan menggantikan harga produk utama (Contoh: Menjadi Rp 25.000)',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    Text(
+                      'Daftar Opsi',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: options.length,
+                      itemBuilder: (context, oIndex) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: myTextField(
+                                  controller: options[oIndex]['controller_name'],
+                                  placeholder: 'Nama Opsi',
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                child: myTextField(
+                                  controller: options[oIndex]['controller_price'],
+                                  placeholder: 'Harga +',
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setVState(() {
+                                    options.removeAt(oIndex);
+                                  });
+                                },
+                                icon: const Icon(
+                                  TablerIcons.circle_minus,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+                    myButtonPrimary(
+                      onPressed: () => _addOption(setVState),
+                      backgroundColor: Warna.Primary.withOpacity(0.1),
+                      foregroundColor: Warna.Primary,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(TablerIcons.plus, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Tambah Opsi',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _bulkDelete() {
