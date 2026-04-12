@@ -25,7 +25,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   double get totalPrice {
-    return items.fold(0, (sum, item) => sum + (item['price'] * item['qty']));
+    return items.fold(
+        0, (sum, item) => sum + ((item['totalPrice'] ?? item['price']) * item['qty']));
   }
 
   @override
@@ -59,9 +60,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 return _buildCartItem(
                   index: index,
                   name: item['name'],
-                  price: item['price'].toDouble(),
+                  price: (item['totalPrice'] ?? item['price']).toDouble(),
                   qty: item['qty'],
                   imageUrl: item['image'],
+                  selectedOptions: item['selectedOptions'] as List<dynamic>?,
                 );
               },
             ),
@@ -132,6 +134,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     required double price,
     required int qty,
     required String imageUrl,
+    List<dynamic>? selectedOptions,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
@@ -178,9 +181,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (selectedOptions != null && selectedOptions.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    selectedOptions.map((o) => o['name']).join(', '),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
                 const SizedBox(height: 5),
                 Text(
-                  'Rp ${price.toInt()}',
+                  'Rp ${price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     color: Warna.Primary,

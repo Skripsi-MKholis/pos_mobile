@@ -66,47 +66,50 @@ class _MenuPageState extends State<MenuPage> {
                     {
                       'title': 'Kasir (POS)',
                       'subtitle': 'Transaksi Penjualan',
-                      'icon': Icons.point_of_sale_rounded,
+                      'icon': Icons.point_of_sale,
                       'color': Warna.Primary,
                       'onTap': () => _navigateTo(context, const KasirPage()),
                       'roles': ['Owner', 'Karyawan'],
                     },
                     {
                       'title': 'Dashboard',
-                      'subtitle': 'Statistik & Ringkasan',
-                      'icon': Icons.dashboard_rounded,
+                      'subtitle': 'Statistik & Ringkasan Penghasilan',
+                      'icon': TablerIcons.layout_dashboard,
                       'color': Colors.blue[400]!,
-                      'onTap': () => _navigateTo(context, const DashboardPage()),
+                      'onTap': () =>
+                          _navigateTo(context, const DashboardPage()),
                       'roles': ['Owner', 'Karyawan', 'Pelanggan'],
                     },
                     {
                       'title': 'Riwayat',
-                      'subtitle': 'Data Transaksi',
-                      'icon': Icons.history_rounded,
+                      'subtitle': 'Data Transaksi Selesai',
+                      'icon': TablerIcons.history,
                       'color': Colors.orange[400]!,
-                      'onTap': () => _navigateTo(context, const RiwayatTransaksiPage()),
+                      'onTap': () =>
+                          _navigateTo(context, const RiwayatTransaksiPage()),
                       'roles': ['Owner', 'Karyawan', 'Pelanggan'],
                     },
                     {
                       'title': 'Laporan',
-                      'subtitle': 'Laporan Penjualan',
-                      'icon': Icons.bar_chart_rounded,
+                      'subtitle': 'Analisis Laporan Penjualan Lengkap',
+                      'icon': TablerIcons.chart_bar,
                       'color': Colors.purple[400]!,
                       'onTap': () => _navigateTo(context, const LaporanPage()),
                       'roles': ['Owner'],
                     },
                     {
                       'title': 'Produk',
-                      'subtitle': 'Kelola Stok & Barang',
-                      'icon': Icons.inventory_2_rounded,
+                      'subtitle': 'Kelola Stok & Barang Jualan',
+                      'icon': TablerIcons.package,
                       'color': Colors.green[400]!,
-                      'onTap': () => _navigateTo(context, const ManageProductsPage()),
+                      'onTap': () =>
+                          _navigateTo(context, const ManageProductsPage()),
                       'roles': ['Owner', 'Karyawan'],
                     },
                     {
                       'title': 'Pelanggan',
-                      'subtitle': 'Data Member',
-                      'icon': Icons.people_alt_rounded,
+                      'subtitle': 'Data Member & Pelanggan Setia',
+                      'icon': TablerIcons.users,
                       'color': Colors.pink[400]!,
                       'onTap': () {
                         MySnackBar(
@@ -119,16 +122,17 @@ class _MenuPageState extends State<MenuPage> {
                     },
                     {
                       'title': 'Pengaturan',
-                      'subtitle': 'Konfigurasi Aplikasi',
-                      'icon': Icons.settings_rounded,
+                      'subtitle': 'Konfigurasi Aplikasi & Toko',
+                      'icon': TablerIcons.settings,
                       'color': Colors.blueGrey[400]!,
-                      'onTap': () => _navigateTo(context, const PengaturanPage()),
+                      'onTap': () =>
+                          _navigateTo(context, const PengaturanPage()),
                       'roles': ['Owner', 'Karyawan'],
                     },
                     {
                       'title': 'Profil',
-                      'subtitle': 'Info Akun',
-                      'icon': Icons.person_rounded,
+                      'subtitle': 'Informasi Akun & Keamanan',
+                      'icon': TablerIcons.user,
                       'color': Colors.teal[400]!,
                       'onTap': () {
                         MySnackBar(
@@ -148,12 +152,13 @@ class _MenuPageState extends State<MenuPage> {
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 2.2,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 2.2,
+                        ),
                     itemCount: filteredFeatures.length,
                     itemBuilder: (context, index) {
                       final f = filteredFeatures[index];
@@ -168,7 +173,7 @@ class _MenuPageState extends State<MenuPage> {
                   );
                 },
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
               // App Info Card (Optional)
               Container(
@@ -192,7 +197,7 @@ class _MenuPageState extends State<MenuPage> {
                 child: Row(
                   children: [
                     const Icon(
-                      Icons.info_outline,
+                      TablerIcons.info_circle,
                       color: Colors.white,
                       size: 32,
                     ),

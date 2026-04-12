@@ -128,6 +128,60 @@ class MyProductCard extends StatelessWidget {
                                 color: Colors.grey[600],
                               ),
                             ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '•',
+                              style: TextStyle(color: Colors.grey[400]),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: (product['stock'] ?? 0) > 0 ||
+                                        product['isInfiniteStock'] == true
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.red.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                product['isInfiniteStock'] == true
+                                    ? 'Stok: ∞'
+                                    : 'Stok: ${product['stock'] ?? 0}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: (product['stock'] ?? 0) > 0 ||
+                                          product['isInfiniteStock'] == true
+                                      ? Colors.green[700]
+                                      : Colors.red[700],
+                                ),
+                              ),
+                            ),
+                            if (product['variants'] != null &&
+                                product['variants'].isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Warna.Primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  'Varian',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Warna.Primary,
+                                  ),
+                                ),
+                              ),
+                            ],
                             if (!isGridView) ...[
                               const SizedBox(width: 8),
                               Text(
@@ -179,9 +233,7 @@ class MyProductCard extends StatelessWidget {
   Widget _buildGridCard(BuildContext context, NumberFormat fmt) {
     return Container(
       decoration: BoxDecoration(
-        color: isSelected
-            ? Warna.Primary.withValues(alpha: 0.05)
-            : Colors.white,
+        color: isSelected ? Warna.Primary.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: isSelected
             ? Border.all(color: Warna.Primary.withValues(alpha: 0.3), width: 1.5)
@@ -234,12 +286,55 @@ class MyProductCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        product['category'],
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          color: Colors.grey[500],
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              product['category'],
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                color: Colors.grey[500],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: (product['stock'] ?? 0) > 0 ||
+                                      product['isInfiniteStock'] == true
+                                  ? Colors.green.withValues(alpha: 0.1)
+                                  : Colors.red.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              product['isInfiniteStock'] == true
+                                  ? '∞'
+                                  : '${product['stock'] ?? 0}',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: (product['stock'] ?? 0) > 0 ||
+                                        product['isInfiniteStock'] == true
+                                    ? Colors.green[700]
+                                    : Colors.red[700],
+                              ),
+                            ),
+                          ),
+                          if (product['variants'] != null &&
+                              product['variants'].isNotEmpty) ...[
+                            const SizedBox(width: 4),
+                            const Icon(
+                              TablerIcons.layers_intersect,
+                              size: 14,
+                              color: Warna.Primary,
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 8),
                       Row(
