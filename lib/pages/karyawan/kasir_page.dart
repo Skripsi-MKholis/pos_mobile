@@ -412,14 +412,14 @@ class _KasirPageState extends State<KasirPage> {
         if (hasVariants) {
           _showVariantPicker(product);
         } else {
-          _addToCart(product);
+          _showProductNoteModal(product);
         }
       },
       onIncrement: () {
         if (hasVariants) {
           _showVariantPicker(product);
         } else {
-          _addToCart(product);
+          _showProductNoteModal(product);
         }
       },
       onDecrement: () {
@@ -428,18 +428,141 @@ class _KasirPageState extends State<KasirPage> {
     );
   }
 
+  void _showProductNoteModal(Map<String, dynamic> product) {
+    final TextEditingController noteController = TextEditingController();
+    final fmt = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey[200]!),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      MyNetworkImage(
+                        imageUrl: product['image'],
+                        width: 50,
+                        height: 50,
+                        borderRadius: 8,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product['name'],
+                              style: GoogleFonts.plusJakartaSans(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              fmt.format(product['price']),
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Warna.Primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(TablerIcons.x),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Note Input
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Catatan Pesanan',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      myTextField(
+                        controller: noteController,
+                        placeholder: 'Contoh: Kurangi es, pedas, dll.',
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Footer ADD Button
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: myButtonPrimary(
+                    onPressed: () {
+                      _addToCart(product, note: noteController.text);
+                      Navigator.pop(context);
+                    },
+                    backgroundColor: Warna.Primary,
+                    foregroundColor: Colors.white,
+                    child: const Center(
+                      child: Text(
+                        'Tambah ke Keranjang',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _addToCart(
     Map<String, dynamic> product, {
     List<Map<String, dynamic>>? selectedOptions,
     double? customPrice,
+    String? note,
   }) {
     setState(() {
       _lastButtonTap = DateTime.now();
-      String key = product['name'];
+      String variantNames = '';
       if (selectedOptions != null && selectedOptions.isNotEmpty) {
-        final variantNames = selectedOptions.map((o) => o['name']).join(',');
-        key = '${product['name']}|$variantNames';
+        variantNames = selectedOptions.map((o) => o['name']).join(',');
       }
+
+      // Key includes variants and note to allow separate entries for same product with different notes
+      String key = '${product['name']}|$variantNames|${note ?? ''}';
 
       if (_cart.containsKey(key)) {
         _cart[key]!['qty']++;
@@ -453,6 +576,7 @@ class _KasirPageState extends State<KasirPage> {
           'image': product['image'],
           'qty': 1,
           'selectedOptions': selectedOptions ?? [],
+          'note': note ?? '',
           'appliedDiscount': product['appliedDiscount'],
           'stock': product['stock'],
           'isInfiniteStock': product['isInfiniteStock'],
@@ -484,6 +608,7 @@ class _KasirPageState extends State<KasirPage> {
   }
 
   void _showVariantPicker(Map<String, dynamic> product) {
+    final TextEditingController noteController = TextEditingController();
     // Initial required variants selections
     Map<String, dynamic> selectedOptionsMap = {};
     for (var v in product['variants']) {
@@ -512,6 +637,7 @@ class _KasirPageState extends State<KasirPage> {
 
             // Calculate Price
             selectedOptionsMap.forEach((vName, selection) {
+              if (vName == '__note__') return;
               final variant = (product['variants'] as List).firstWhere(
                 (v) => v['name'] == vName,
               );
@@ -596,127 +722,142 @@ class _KasirPageState extends State<KasirPage> {
                     ),
                   ),
 
-                  // Variants List
+                  // Variants List & Note
                   Expanded(
-                    child: ListView.builder(
+                    child: ListView(
                       padding: const EdgeInsets.all(16),
-                      itemCount: (product['variants'] as List).length,
-                      itemBuilder: (context, index) {
-                        final variant = product['variants'][index];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  variant['name'],
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                if (variant['isRequired'])
+                      children: [
+                        ...(product['variants'] as List).map((variant) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
                                   Text(
-                                    ' (Wajib)',
-                                    style: TextStyle(
-                                      color: Colors.red[400],
-                                      fontSize: 12,
+                                    variant['name'],
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
                                     ),
                                   ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: (variant['options'] as List).map((
-                                option,
-                              ) {
-                                bool isSelected = false;
-                                if (variant['allowMultiple']) {
-                                  isSelected =
-                                      (selectedOptionsMap[variant['name']]
-                                              as List)
-                                          .contains(option);
-                                } else {
-                                  isSelected =
-                                      selectedOptionsMap[variant['name']] ==
-                                      option;
-                                }
-
-                                return BounceTapper(
-                                  onTap: () {
-                                    setModalState(() {
-                                      if (variant['allowMultiple']) {
-                                        final list =
-                                            selectedOptionsMap[variant['name']]
-                                                as List<Map<String, dynamic>>;
-                                        if (isSelected) {
-                                          list.remove(option);
-                                        } else {
-                                          list.add(option);
-                                        }
-                                      } else {
-                                        selectedOptionsMap[variant['name']] =
-                                            option;
-                                      }
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? Warna.Primary
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? Warna.Primary
-                                            : Colors.grey[300]!,
+                                  if (variant['isRequired'])
+                                    Text(
+                                      ' (Wajib)',
+                                      style: TextStyle(
+                                        color: Colors.red[400],
+                                        fontSize: 12,
                                       ),
                                     ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          option['name'],
-                                          style: TextStyle(
-                                            color: isSelected
-                                                ? Colors.white
-                                                : Colors.black,
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                          ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: (variant['options'] as List).map((
+                                  option,
+                                ) {
+                                  bool isSelected = false;
+                                  if (variant['allowMultiple']) {
+                                    isSelected =
+                                        (selectedOptionsMap[variant['name']]
+                                                as List)
+                                            .contains(option);
+                                  } else {
+                                    isSelected =
+                                        selectedOptionsMap[variant['name']] ==
+                                        option;
+                                  }
+
+                                  return BounceTapper(
+                                    onTap: () {
+                                      setModalState(() {
+                                        if (variant['allowMultiple']) {
+                                          final list =
+                                              selectedOptionsMap[variant['name']]
+                                                  as List<Map<String, dynamic>>;
+                                          if (isSelected) {
+                                            list.remove(option);
+                                          } else {
+                                            list.add(option);
+                                          }
+                                        } else {
+                                          selectedOptionsMap[variant['name']] =
+                                              option;
+                                        }
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? Warna.Primary
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? Warna.Primary
+                                              : Colors.grey[300]!,
                                         ),
-                                        if (option['price'] > 0) ...[
-                                          const SizedBox(width: 4),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
                                           Text(
-                                            variant['priceType'] ==
-                                                    'Tambah Harga'
-                                                ? '(+${option['price']})'
-                                                : '(${option['price']})',
+                                            option['name'],
                                             style: TextStyle(
-                                              fontSize: 10,
                                               color: isSelected
-                                                  ? Colors.white70
-                                                  : Colors.grey[500],
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
                                             ),
                                           ),
+                                          if (option['price'] > 0) ...[
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              variant['priceType'] ==
+                                                      'Tambah Harga'
+                                                  ? '(+${option['price']})'
+                                                  : '(${option['price']})',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isSelected
+                                                    ? Colors.white70
+                                                    : Colors.grey[500],
+                                              ),
+                                            ),
+                                          ],
                                         ],
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        );
-                      },
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          );
+                        }).toList(),
+
+                        const SizedBox(height: 10),
+                        Text(
+                          'Catatan Pesanan',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        myTextField(
+                          controller: noteController,
+                          placeholder: 'Contoh: Kurangi es, pedas, dll.',
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                     ),
                   ),
 
@@ -755,6 +896,7 @@ class _KasirPageState extends State<KasirPage> {
                           product,
                           selectedOptions: finalSelectedOptions,
                           customPrice: currentPrice,
+                          note: noteController.text,
                         );
                         Navigator.pop(context);
                       },

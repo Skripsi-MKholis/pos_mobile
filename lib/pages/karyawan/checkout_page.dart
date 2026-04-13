@@ -1,3 +1,4 @@
+import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
@@ -15,6 +16,7 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   late List<Map<String, dynamic>> items;
+  final TextEditingController orderNoteController = TextEditingController();
 
   @override
   void initState() {
@@ -25,8 +27,88 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  @override
+  void dispose() {
+    orderNoteController.dispose();
+    super.dispose();
+  }
+
+  void _showEditItemNoteModal(int index) {
+    final TextEditingController noteController = TextEditingController(
+      text: items[index]['note'] ?? '',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Edit Catatan Item',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(TablerIcons.x),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  items[index]['name'],
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                myTextField(
+                  controller: noteController,
+                  placeholder: 'Contoh: Tambah es, jangan pedas, dll.',
+                ),
+                const SizedBox(height: 20),
+                myButtonPrimary(
+                  onPressed: () {
+                    setState(() {
+                      items[index]['note'] = noteController.text;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Simpan Perubahan'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   double get totalPrice {
-    return items.fold(0, (sum, item) => sum + (item['totalPrice'] * item['qty']));
+    return items.fold(
+      0,
+      (sum, item) => sum + (item['totalPrice'] * item['qty']),
+    );
   }
 
   final NumberFormat _fmt = NumberFormat.currency(
@@ -44,8 +126,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(TablerIcons.shopping_cart_off,
-                      size: 80, color: Colors.grey[400]),
+                  Icon(
+                    TablerIcons.shopping_cart_off,
+                    size: 80,
+                    color: Colors.grey[400],
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Keranjang Kosong',
@@ -63,10 +148,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return _buildCartItem(
-                  index: index,
-                  item: item,
-                );
+                return _buildCartItem(index: index, item: item);
               },
             ),
       bottomNavigationBar: items.isEmpty
@@ -85,7 +167,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    'Catatan Pesanan',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  myTextField(
+                    controller: orderNoteController,
+                    placeholder: 'Keterangan tambahan (Meja, Nama, dll)',
+                  ),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -120,8 +217,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     foregroundColor: Colors.white,
                     child: const Text(
                       'Bayar Sekarang',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ],
@@ -135,6 +234,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     required Map<String, dynamic> item,
   }) {
     final String name = item['name'];
+    final String? note = item['note'];
     final double totalPrice = (item['totalPrice'] ?? item['price']).toDouble();
     final double originalPrice = (item['price'] ?? 0).toDouble();
     final int qty = item['qty'];
@@ -174,14 +274,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    BounceTapper(
+                      onTap: () => _showEditItemNoteModal(index),
+                      child: Icon(
+                        TablerIcons.note,
+                        size: 18,
+                        color: note != null && note.isNotEmpty
+                            ? Warna.Primary
+                            : Colors.grey[400],
+                      ),
+                    ),
+                  ],
                 ),
                 Wrap(
                   spacing: 4,
@@ -232,6 +348,45 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       }),
                   ],
                 ),
+                if (note != null && note.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  BounceTapper(
+                    onTap: () => _showEditItemNoteModal(index),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Warna.Primary.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: Warna.Primary.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            TablerIcons.info_circle,
+                            size: 14,
+                            color: Warna.Primary,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              note,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                color: Colors.grey[700],
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -301,8 +456,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildQtyButton(IconData icon, VoidCallback onTap,
-      {bool isNegative = false}) {
+  Widget _buildQtyButton(
+    IconData icon,
+    VoidCallback onTap, {
+    bool isNegative = false,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
