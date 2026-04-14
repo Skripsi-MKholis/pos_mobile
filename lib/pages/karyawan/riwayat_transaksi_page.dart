@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
 class RiwayatTransaksiPage extends StatefulWidget {
@@ -15,7 +15,7 @@ class _RiwayatTransaksiPageState extends State<RiwayatTransaksiPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(title: 'Riwayat Transaksi', isCenter: false),
       body: SafeArea(
         child: ListView.builder(
@@ -38,7 +38,7 @@ class _RiwayatTransaksiPageState extends State<RiwayatTransaksiPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -49,10 +49,10 @@ class _RiwayatTransaksiPageState extends State<RiwayatTransaksiPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Warna.Primary.withOpacity(0.1),
+              color: Warna.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(TablerIcons.receipt_2, color: Warna.Primary),
+            child: Icon(TablerIcons.receipt_2, color: Warna.primary),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -86,14 +86,14 @@ class _RiwayatTransaksiPageState extends State<RiwayatTransaksiPage> {
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: Warna.Primary,
+                  color: Warna.primary,
                 ),
               ),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

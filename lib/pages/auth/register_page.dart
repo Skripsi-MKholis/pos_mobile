@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 
@@ -21,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -82,12 +82,12 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 40),
 
-              myButtonPrimary(
+              MyButtonPrimary(
                 onPressed: () {
                   if (_nameController.text.isEmpty ||
                       _emailController.text.isEmpty ||
                       _passwordController.text.isEmpty) {
-                    MySnackBar(
+                    mySnackBar(
                       context: context,
                       text: 'Terdapat input kosong!',
                       status: ToastStatus.warning,
@@ -96,7 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   }
                   
                   if (_passwordController.text != _confirmPasswordController.text) {
-                    MySnackBar(
+                    mySnackBar(
                       context: context,
                       text: 'Password tidak cocok!',
                       status: ToastStatus.error,
@@ -104,14 +104,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     return;
                   }
 
-                  MySnackBar(
+                  mySnackBar(
                     context: context,
                     text: 'Pendaftaran berhasil! Silakan login.',
                     status: ToastStatus.success,
                   );
                   Navigator.pop(context);
                 },
-                backgroundColor: Warna.Primary,
+                backgroundColor: Warna.primary,
                 foregroundColor: Colors.white,
                 child: Text(
                   'Daftar Sekarang',
@@ -141,7 +141,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         'Masuk Disini',
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.bold,
-                          color: Warna.Primary,
+                          color: Warna.primary,
                         ),
                       ),
                     ),

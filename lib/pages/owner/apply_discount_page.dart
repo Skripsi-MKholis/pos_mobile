@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/components/product_card.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 
@@ -113,7 +113,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
 
   void _applyDiscount() {
     if (_selectedProductIndices.isEmpty) {
-      MySnackBar(
+      mySnackBar(
         context: context,
         text: 'Pilih minimal satu produk!',
         status: ToastStatus.error,
@@ -124,7 +124,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
     // Process logic here...
     // In this mock, we just pop back
     Navigator.pop(context);
-    MySnackBar(
+    mySnackBar(
       context: context,
       text:
           'Diskon berhasil diterapkan ke ${_selectedProductIndices.length} produk',
@@ -144,7 +144,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
           ).format(discount['value']);
 
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Terapkan Diskon',
         isCenter: true,
@@ -157,7 +157,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
             },
             icon: Icon(
               _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -169,9 +169,9 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Warna.Primary.withValues(alpha: 0.1),
+              color: Warna.primary.withValues(alpha: 0.1),
               border: Border(
-                bottom: BorderSide(color: Warna.Primary.withValues(alpha: 0.2)),
+                bottom: BorderSide(color: Warna.primary.withValues(alpha: 0.2)),
               ),
             ),
             child: Row(
@@ -184,7 +184,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                   ),
                   child: Icon(
                     TablerIcons.discount_2,
-                    color: Warna.Primary,
+                    color: Warna.primary,
                     size: 24,
                   ),
                 ),
@@ -204,7 +204,7 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                         'Besar Diskon: $valueDisplay',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
-                          color: Warna.Primary,
+                          color: Warna.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -242,11 +242,11 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 14),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: isSel ? Warna.Primary : Colors.white,
+                              color: isSel ? Warna.primary : Colors.white,
                               borderRadius: BorderRadius.circular(18),
                               border: Border.all(
                                 color: isSel
-                                    ? Warna.Primary
+                                    ? Warna.primary
                                     : Colors.grey[300]!,
                               ),
                             ),
@@ -337,9 +337,9 @@ class _ApplyDiscountPageState extends State<ApplyDiscountPage> {
                 ),
               ],
             ),
-            child: myButtonPrimary(
+            child: MyButtonPrimary(
               onPressed: _applyDiscount,
-              backgroundColor: Warna.Primary,
+              backgroundColor: Warna.primary,
               foregroundColor: Colors.white,
               child: Text(
                 _selectedProductIndices.isEmpty

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/pages/owner/apply_category_page.dart';
 
@@ -73,10 +73,10 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                 labelText: 'Nama Kategori',
               ),
               const SizedBox(height: 32),
-              myButtonPrimary(
+              MyButtonPrimary(
                 onPressed: () {
                   if (controller.text.isEmpty) {
-                    MySnackBar(
+                    mySnackBar(
                       context: context,
                       text: 'Nama kategori harus diisi!',
                       status: ToastStatus.error,
@@ -94,7 +94,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
 
                   Navigator.pop(context);
                 },
-                backgroundColor: Warna.Primary,
+                backgroundColor: Warna.primary,
                 foregroundColor: Colors.white,
                 child: Text(
                   category == null ? 'Simpan' : 'Update',
@@ -133,7 +133,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                 categories.removeAt(index);
               });
               Navigator.pop(context);
-              MySnackBar(
+              mySnackBar(
                 context: context,
                 text: 'Kategori berhasil dihapus',
                 status: ToastStatus.success,
@@ -152,7 +152,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Kelola Kategori',
         isCenter: true,
@@ -172,7 +172,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
             },
             icon: Icon(
               _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -210,12 +210,12 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Warna.Primary.withValues(alpha: 0.1),
+                              color: Warna.primary.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               TablerIcons.category,
-                              color: Warna.Primary,
+                              color: Warna.primary,
                               size: 20,
                             ),
                           ),
@@ -291,12 +291,12 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Warna.Primary.withValues(alpha: 0.1),
+                              color: Warna.primary.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               TablerIcons.category,
-                              color: Warna.Primary,
+                              color: Warna.primary,
                               size: 20,
                             ),
                           ),
@@ -357,7 +357,7 @@ class _ManageCategoriesPageState extends State<ManageCategoriesPage> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCategoryForm(),
-        backgroundColor: Warna.Primary,
+        backgroundColor: Warna.primary,
         child: const Icon(TablerIcons.plus, color: Colors.white),
       ),
     );

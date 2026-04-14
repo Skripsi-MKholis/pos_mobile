@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:pos_mobile/pages/auth/login_page.dart';
 import 'package:pos_mobile/pages/karyawan/kasir_page.dart';
 import 'package:pos_mobile/pages/owner/laporan_page.dart';
 import 'package:pos_mobile/pages/shared/pengaturan_page.dart';
 import 'package:pos_mobile/pages/karyawan/riwayat_transaksi_page.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:pos_mobile/pages/shared/menu_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -46,10 +46,10 @@ class _MyAppState extends State<MyApp> {
       title: 'POS Mobile',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Warna.Primary,
-          primary: Warna.Primary,
+          seedColor: Warna.primary,
+          primary: Warna.primary,
         ),
-        scaffoldBackgroundColor: Warna.BG,
+        scaffoldBackgroundColor: Warna.bg,
         textTheme: GoogleFonts.plusJakartaSansTextTheme(),
         useMaterial3: true,
       ),
@@ -168,7 +168,7 @@ class _MainScreenState extends State<MainScreen> {
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         tileColor: isSelected
-            ? colorScheme.primary.withOpacity(0.1)
+            ? colorScheme.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         leading: Icon(
           icon,
@@ -290,7 +290,7 @@ class _MainScreenState extends State<MainScreen> {
                       radius: 24,
                       backgroundColor: Theme.of(
                         context,
-                      ).colorScheme.primary.withOpacity(0.1),
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       child: Icon(
                         Icons.store_rounded,
                         color: Theme.of(context).colorScheme.primary,
@@ -454,7 +454,7 @@ class _MainScreenState extends State<MainScreen> {
                               color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
                                 ),
@@ -491,7 +491,7 @@ class _MainScreenState extends State<MainScreen> {
                           _onItemTapped(idx);
                         },
                       );
-                    }).toList(),
+                    }),
 
                     if (widget.role == 'Owner') ...[
                       Padding(
@@ -577,7 +577,7 @@ class _MainScreenState extends State<MainScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
-            BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(.1)),
+            BoxShadow(blurRadius: 20, color: Colors.black.withValues(alpha: .1)),
           ],
         ),
         child: SafeArea(
@@ -593,7 +593,7 @@ class _MainScreenState extends State<MainScreen> {
               duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Theme.of(
                 context,
-              ).colorScheme.primary.withOpacity(0.1),
+              ).colorScheme.primary.withValues(alpha: 0.1),
               color: Colors.grey[500],
               tabs: _getNavItems().map((item) {
                 return GButton(icon: item['icon'], text: item['text']);

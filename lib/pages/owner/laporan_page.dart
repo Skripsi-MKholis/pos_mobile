@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
+
 import 'package:intl/intl.dart';
 import 'package:pos_mobile/pages/owner/prediksi_page.dart';
 
@@ -63,14 +63,14 @@ class _LaporanPageState extends State<LaporanPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: Warna.BG,
+        backgroundColor: Warna.bg,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: Container(
             color: Colors.white,
             child: TabBar(
-              indicatorColor: Warna.Primary,
-              labelColor: Warna.Primary,
+              indicatorColor: Warna.primary,
+              labelColor: Warna.primary,
               unselectedLabelColor: Colors.grey,
               labelStyle: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.bold,
@@ -111,7 +111,7 @@ class _LaporanPageState extends State<LaporanPage> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -123,8 +123,8 @@ class _LaporanPageState extends State<LaporanPage> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: isSuccess
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.red.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -163,7 +163,7 @@ class _LaporanPageState extends State<LaporanPage> {
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                   Text(
@@ -292,12 +292,12 @@ class _LaporanPageState extends State<LaporanPage> {
                           const FlSpot(6, 5.5),
                         ],
                         isCurved: true,
-                        color: Warna.Primary,
+                        color: Warna.primary,
                         barWidth: 3,
                         dotData: FlDotData(show: false),
                         belowBarData: BarAreaData(
                           show: true,
-                          color: Warna.Primary.withOpacity(0.1),
+                          color: Warna.primary.withValues(alpha: 0.1),
                         ),
                       ),
                     ],
@@ -322,7 +322,7 @@ class _LaporanPageState extends State<LaporanPage> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Warna.Primary, Warna.Secondary],
+              colors: [Warna.primary, Warna.secondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -347,7 +347,7 @@ class _LaporanPageState extends State<LaporanPage> {
                     Text(
                       'Berdasarkan performa toko Anda',
                       style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12,
                       ),
                     ),
@@ -387,7 +387,7 @@ class _LaporanPageState extends State<LaporanPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Warna.Primary.withOpacity(0.2)),
+            border: Border.all(color: Warna.primary.withValues(alpha: 0.2)),
           ),
           child: Column(
             children: [
@@ -407,7 +407,7 @@ class _LaporanPageState extends State<LaporanPage> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Warna.BG,
+                      color: Warna.bg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -421,7 +421,7 @@ class _LaporanPageState extends State<LaporanPage> {
               _buildRestockRow('Biji Kopi Arabika', '5 kg', 'Dalam 3 Hari'),
               _buildRestockRow('Susu UHT', '12 Liter', 'Dalam 2 Hari'),
               const SizedBox(height: 20),
-              myButtonPrimary(
+              MyButtonPrimary(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -430,7 +430,7 @@ class _LaporanPageState extends State<LaporanPage> {
                     ),
                   );
                 },
-                backgroundColor: Warna.Primary,
+                backgroundColor: Warna.primary,
                 foregroundColor: Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -466,7 +466,7 @@ class _LaporanPageState extends State<LaporanPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -501,7 +501,7 @@ class _LaporanPageState extends State<LaporanPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

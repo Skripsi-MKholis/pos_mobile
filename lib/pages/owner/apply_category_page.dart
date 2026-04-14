@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/components/product_card.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 
@@ -111,7 +111,7 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
 
   void _applyCategory() {
     if (_selectedProductIndices.isEmpty) {
-      MySnackBar(
+      mySnackBar(
         context: context,
         text: 'Pilih minimal satu produk!',
         status: ToastStatus.error,
@@ -122,7 +122,7 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
     // Process logic here...
     // In this mock, we just pop back
     Navigator.pop(context);
-    MySnackBar(
+    mySnackBar(
       context: context,
       text:
           'Berhasil menambahkan ${_selectedProductIndices.length} produk ke kategori ${widget.categoryName}',
@@ -133,7 +133,7 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Tambah ke Kategori',
         isCenter: true,
@@ -146,7 +146,7 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
             },
             icon: Icon(
               _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -158,9 +158,9 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Warna.Primary.withValues(alpha: 0.1),
+              color: Warna.primary.withValues(alpha: 0.1),
               border: Border(
-                bottom: BorderSide(color: Warna.Primary.withValues(alpha: 0.2)),
+                bottom: BorderSide(color: Warna.primary.withValues(alpha: 0.2)),
               ),
             ),
             child: Row(
@@ -173,7 +173,7 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
                   ),
                   child: Icon(
                     TablerIcons.category,
-                    color: Warna.Primary,
+                    color: Warna.primary,
                     size: 24,
                   ),
                 ),
@@ -231,11 +231,11 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 14),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: isSel ? Warna.Primary : Colors.white,
+                              color: isSel ? Warna.primary : Colors.white,
                               borderRadius: BorderRadius.circular(18),
                               border: Border.all(
                                 color: isSel
-                                    ? Warna.Primary
+                                    ? Warna.primary
                                     : Colors.grey[300]!,
                               ),
                             ),
@@ -325,9 +325,9 @@ class _ApplyCategoryPageState extends State<ApplyCategoryPage> {
                 ),
               ],
             ),
-            child: myButtonPrimary(
+            child: MyButtonPrimary(
               onPressed: _applyCategory,
-              backgroundColor: Warna.Primary,
+              backgroundColor: Warna.primary,
               foregroundColor: Colors.white,
               child: Text(
                 _selectedProductIndices.isEmpty

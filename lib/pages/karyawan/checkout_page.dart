@@ -1,9 +1,9 @@
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:intl/intl.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -102,14 +102,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Warna.Primary
+                              ? Warna.primary
                               : isOccupied
                                   ? Colors.grey[200]
                                   : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? Warna.Primary
+                                ? Warna.primary
                                 : isOccupied
                                     ? Colors.transparent
                                     : Colors.grey[300]!,
@@ -134,7 +134,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 10,
                                 color: isSelected
-                                    ? Colors.white.withOpacity(0.8)
+                                    ? Colors.white.withValues(alpha: 0.8)
                                     : isOccupied
                                         ? Colors.grey[400]
                                         : Colors.grey[600],
@@ -208,7 +208,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   placeholder: 'Contoh: Tambah es, jangan pedas, dll.',
                 ),
                 const SizedBox(height: 20),
-                myButtonPrimary(
+                MyButtonPrimary(
                   onPressed: () {
                     setState(() {
                       items[index]['note'] = noteController.text;
@@ -280,7 +280,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.grey.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, -5),
                   ),
@@ -311,7 +311,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               : 'Pilih Meja',
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.bold,
-                            color: Warna.Primary,
+                            color: Warna.primary,
                           ),
                         ),
                       ),
@@ -348,16 +348,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Warna.Primary,
+                          color: Warna.primary,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 15),
-                  myButtonPrimary(
+                  MyButtonPrimary(
                     onPressed: () {
                       if (selectedTable == null) {
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Mohon pilih meja terlebih dahulu!',
                           status: ToastStatus.warning,
@@ -365,14 +365,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         return;
                       }
 
-                      MySnackBar(
+                      mySnackBar(
                         context: context,
                         text: 'Pembayaran Berhasil untuk ${selectedTable!['name']}!',
                         status: ToastStatus.success,
                       );
                       Navigator.pop(context);
                     },
-                    backgroundColor: Warna.Primary,
+                    backgroundColor: Warna.primary,
                     foregroundColor: Colors.white,
                     child: const Text(
                       'Bayar Sekarang',
@@ -452,7 +452,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         TablerIcons.note,
                         size: 18,
                         color: note != null && note.isNotEmpty
-                            ? Warna.Primary
+                            ? Warna.primary
                             : Colors.grey[400],
                       ),
                     ),
@@ -517,10 +517,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Warna.Primary.withValues(alpha: 0.05),
+                        color: Warna.primary.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: Warna.Primary.withValues(alpha: 0.1),
+                          color: Warna.primary.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Row(
@@ -528,7 +528,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Icon(
                             TablerIcons.info_circle,
                             size: 14,
-                            color: Warna.Primary,
+                            color: Warna.primary,
                           ),
                           const SizedBox(width: 6),
                           Expanded(
@@ -566,7 +566,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           _fmt.format(totalPrice),
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 15,
-                            color: Warna.Primary,
+                            color: Warna.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -627,13 +627,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         decoration: BoxDecoration(
           color: isNegative
               ? Colors.red.withValues(alpha: 0.1)
-              : Warna.Primary.withValues(alpha: 0.1),
+              : Warna.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
           icon,
           size: 16,
-          color: isNegative ? Colors.red : Warna.Primary,
+          color: isNegative ? Colors.red : Warna.primary,
         ),
       ),
     );
