@@ -12,6 +12,7 @@ import 'package:pos_mobile/pages/shared/pengaturan_page.dart';
 import 'package:marquee/marquee.dart';
 import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
 import 'package:pos_mobile/pages/owner/manage_products_page.dart';
+import 'package:pos_mobile/pages/owner/manage_tables_page.dart';
 
 class MenuPage extends StatefulWidget {
   final String role;
@@ -105,6 +106,15 @@ class _MenuPageState extends State<MenuPage> {
                       'onTap': () =>
                           _navigateTo(context, const ManageProductsPage()),
                       'roles': ['Owner', 'Karyawan'],
+                    },
+                    {
+                      'title': 'Meja & Seat',
+                      'subtitle': 'Kelola Meja & Kapasitas Kursi',
+                      'icon': TablerIcons.armchair,
+                      'color': Colors.brown[400]!,
+                      'onTap': () =>
+                          _navigateTo(context, const ManageTablesPage()),
+                      'roles': ['Owner'],
                     },
                     {
                       'title': 'Pelanggan',

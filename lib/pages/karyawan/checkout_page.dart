@@ -17,6 +17,16 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   late List<Map<String, dynamic>> items;
   final TextEditingController orderNoteController = TextEditingController();
+  Map<String, dynamic>? selectedTable;
+
+  // Dummy Tables (In sync with ManageTablesPage for demo)
+  final List<Map<String, dynamic>> tables = [
+    {'id': '1', 'name': 'Meja 01', 'capacity': 2, 'status': 'Tersedia', 'area': 'Indoor'},
+    {'id': '2', 'name': 'Meja 02', 'capacity': 4, 'status': 'Terisi', 'area': 'Indoor'},
+    {'id': '3', 'name': 'Meja 03', 'capacity': 4, 'status': 'Tersedia', 'area': 'Outdoor'},
+    {'id': '4', 'name': 'Meja 04', 'capacity': 6, 'status': 'Tersedia', 'area': 'Outdoor'},
+    {'id': '5', 'name': 'VIP 01', 'capacity': 8, 'status': 'Tersedia', 'area': 'VIP Room'},
+  ];
 
   @override
   void initState() {
@@ -31,6 +41,117 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void dispose() {
     orderNoteController.dispose();
     super.dispose();
+  }
+
+  void _showTableSelectionModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Pilih Meja / Seat',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(TablerIcons.x),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1.2,
+                  ),
+                  itemCount: tables.length,
+                  itemBuilder: (context, index) {
+                    final table = tables[index];
+                    final isSelected = selectedTable?['id'] == table['id'];
+                    final isOccupied = table['status'] == 'Terisi';
+
+                    return BounceTapper(
+                      onTap: isOccupied
+                          ? null
+                          : () {
+                              setState(() {
+                                selectedTable = table;
+                              });
+                              Navigator.pop(context);
+                            },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Warna.Primary
+                              : isOccupied
+                                  ? Colors.grey[200]
+                                  : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected
+                                ? Warna.Primary
+                                : isOccupied
+                                    ? Colors.transparent
+                                    : Colors.grey[300]!,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              table['name'],
+                              style: GoogleFonts.plusJakartaSans(
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? Colors.white
+                                    : isOccupied
+                                        ? Colors.grey[500]
+                                        : Colors.black,
+                              ),
+                            ),
+                            Text(
+                              isOccupied ? 'Terisi' : '${table['capacity']} Kursi',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 10,
+                                color: isSelected
+                                    ? Colors.white.withOpacity(0.8)
+                                    : isOccupied
+                                        ? Colors.grey[400]
+                                        : Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showEditItemNoteModal(int index) {
@@ -169,6 +290,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Table Selection
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Pilihan Meja',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: _showTableSelectionModal,
+                        icon: const Icon(TablerIcons.armchair, size: 18),
+                        label: Text(
+                          selectedTable != null
+                              ? selectedTable!['name']
+                              : 'Pilih Meja',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            color: Warna.Primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
                   Text(
                     'Catatan Pesanan',
                     style: GoogleFonts.plusJakartaSans(
@@ -180,7 +330,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   const SizedBox(height: 8),
                   myTextField(
                     controller: orderNoteController,
-                    placeholder: 'Keterangan tambahan (Meja, Nama, dll)',
+                    placeholder: 'Keterangan tambahan (Nama Pelanggan, dll)',
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -206,9 +356,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   const SizedBox(height: 15),
                   myButtonPrimary(
                     onPressed: () {
+                      if (selectedTable == null) {
+                        MySnackBar(
+                          context: context,
+                          text: 'Mohon pilih meja terlebih dahulu!',
+                          status: ToastStatus.warning,
+                        );
+                        return;
+                      }
+
                       MySnackBar(
                         context: context,
-                        text: 'Pembayaran Berhasil!',
+                        text: 'Pembayaran Berhasil untuk ${selectedTable!['name']}!',
                         status: ToastStatus.success,
                       );
                       Navigator.pop(context);
