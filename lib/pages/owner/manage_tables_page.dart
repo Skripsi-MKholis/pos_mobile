@@ -16,24 +16,70 @@ class ManageTablesPage extends StatefulWidget {
 
 class _ManageTablesPageState extends State<ManageTablesPage> {
   final TextEditingController _searchController = TextEditingController();
-  final TransformationController _transformationController = TransformationController();
+  final TransformationController _transformationController =
+      TransformationController();
   String _searchQuery = '';
-  TableViewMode _viewMode = TableViewMode.layout;
+  TableViewMode _viewMode = TableViewMode.grid;
   bool _isEditMode = false;
 
-  // Dummy Initial Tables with coordinates
+  // Dummy Initial Tables with coordinates and shapes
   List<Map<String, dynamic>> tables = [
-    {'id': '1', 'name': '01', 'capacity': 2, 'status': 'Tersedia', 'area': 'Indoor', 'x': 50.0, 'y': 50.0},
-    {'id': '2', 'name': '02', 'capacity': 4, 'status': 'Terisi', 'area': 'Indoor', 'x': 120.0, 'y': 50.0},
-    {'id': '3', 'name': '03', 'capacity': 4, 'status': 'Tersedia', 'area': 'Indoor', 'x': 190.0, 'y': 50.0},
-    {'id': '4', 'name': '04', 'capacity': 6, 'status': 'Tersedia', 'area': 'Outdoor', 'x': 50.0, 'y': 150.0},
-    {'id': '5', 'name': 'VIP', 'capacity': 8, 'status': 'Tersedia', 'area': 'VIP Room', 'x': 120.0, 'y': 150.0},
+    {
+      'id': '1',
+      'name': '01',
+      'capacity': 2,
+      'status': 'Tersedia',
+      'area': 'Indoor',
+      'x': 50.0,
+      'y': 100.0,
+    },
+    {
+      'id': '2',
+      'name': '02',
+      'capacity': 4,
+      'status': 'Terisi',
+      'area': 'Indoor',
+      'x': 150.0,
+      'y': 100.0,
+    },
+    {
+      'id': '3',
+      'name': '03',
+      'capacity': 4,
+      'status': 'Tersedia',
+      'area': 'Indoor',
+      'x': 250.0,
+      'y': 100.0,
+    },
+    {
+      'id': '4',
+      'name': '04',
+      'capacity': 6,
+      'status': 'Tersedia',
+      'area': 'Outdoor',
+      'x': 50.0,
+      'y': 250.0,
+    },
+    {
+      'id': '5',
+      'name': 'VIP',
+      'capacity': 8,
+      'status': 'Tersedia',
+      'area': 'VIP Room',
+      'x': 150.0,
+      'y': 250.0,
+    },
   ];
 
   List<Map<String, dynamic>> get filteredTables {
     return tables.where((table) {
-      final matchesSearch = table['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          table['area'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesSearch =
+          table['name'].toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ) ||
+          table['area'].toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          );
       return matchesSearch;
     }).toList();
   }
@@ -57,7 +103,9 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
 
   void _showTableForm({Map<String, dynamic>? table, int? index}) {
     final nameController = TextEditingController(text: table?['name'] ?? '');
-    final capacityController = TextEditingController(text: table?['capacity']?.toString() ?? '2');
+    final capacityController = TextEditingController(
+      text: table?['capacity']?.toString() ?? '2',
+    );
     String selectedArea = table?['area'] ?? 'Indoor';
     String selectedStatus = table?['status'] ?? 'Tersedia';
 
@@ -118,7 +166,8 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                       selectedValue: selectedArea,
                       items: ['Indoor', 'Outdoor', 'VIP Room'],
                       onChanged: (val) {
-                        if (val != null) setModalState(() => selectedArea = val);
+                        if (val != null)
+                          setModalState(() => selectedArea = val);
                       },
                     ),
                     const SizedBox(height: 16),
@@ -127,21 +176,30 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                       selectedValue: selectedStatus,
                       items: ['Tersedia', 'Terisi'],
                       onChanged: (val) {
-                        if (val != null) setModalState(() => selectedStatus = val);
+                        if (val != null)
+                          setModalState(() => selectedStatus = val);
                       },
                     ),
+                    const SizedBox(height: 16),
                     const SizedBox(height: 30),
                     myButtonPrimary(
                       onPressed: () {
                         if (nameController.text.isEmpty) {
-                          MySnackBar(context: context, text: 'Nama meja wajib diisi', status: ToastStatus.error);
+                          MySnackBar(
+                            context: context,
+                            text: 'Nama meja wajib diisi',
+                            status: ToastStatus.error,
+                          );
                           return;
                         }
 
                         final newTable = {
-                          'id': table?['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                          'id':
+                              table?['id'] ??
+                              DateTime.now().millisecondsSinceEpoch.toString(),
                           'name': nameController.text,
-                          'capacity': int.tryParse(capacityController.text) ?? 2,
+                          'capacity':
+                              int.tryParse(capacityController.text) ?? 2,
                           'area': selectedArea,
                           'status': selectedStatus,
                           'x': table?['x'] ?? 100.0,
@@ -151,14 +209,24 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                         setState(() {
                           if (table == null) {
                             tables.add(newTable);
-                            MySnackBar(context: context, text: 'Meja berhasil ditambahkan', status: ToastStatus.success);
+                            MySnackBar(
+                              context: context,
+                              text: 'Meja berhasil ditambahkan',
+                              status: ToastStatus.success,
+                            );
                           } else {
                             // Find real index in the master list
-                            int masterIndex = tables.indexWhere((t) => t['id'] == table['id']);
+                            int masterIndex = tables.indexWhere(
+                              (t) => t['id'] == table['id'],
+                            );
                             if (masterIndex != -1) {
                               tables[masterIndex] = newTable;
                             }
-                            MySnackBar(context: context, text: 'Meja berhasil diperbarui', status: ToastStatus.success);
+                            MySnackBar(
+                              context: context,
+                              text: 'Meja berhasil diperbarui',
+                              status: ToastStatus.success,
+                            );
                           }
                         });
                         Navigator.pop(context);
@@ -167,7 +235,9 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                       foregroundColor: Colors.white,
                       child: Text(
                         'Simpan',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -186,16 +256,25 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Meja?'),
-        content: Text('Apakah Anda yakin ingin menghapus Meja ${table['name']}?'),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus Meja ${table['name']}?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
           TextButton(
             onPressed: () {
               setState(() {
                 tables.removeWhere((t) => t['id'] == table['id']);
               });
               Navigator.pop(context);
-              MySnackBar(context: context, text: 'Meja berhasil dihapus', status: ToastStatus.success);
+              MySnackBar(
+                context: context,
+                text: 'Meja berhasil dihapus',
+                status: ToastStatus.success,
+              );
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
@@ -218,14 +297,23 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
               _viewMode == TableViewMode.layout
                   ? TablerIcons.armchair
                   : _viewMode == TableViewMode.grid
-                      ? TablerIcons.layout_grid
-                      : TablerIcons.list,
+                  ? TablerIcons.layout_grid
+                  : TablerIcons.list,
             ),
             onSelected: (mode) => setState(() => _viewMode = mode),
             itemBuilder: (context) => [
-              const PopupMenuItem(value: TableViewMode.layout, child: Text('Mode Denah')),
-              const PopupMenuItem(value: TableViewMode.grid, child: Text('Mode Grid')),
-              const PopupMenuItem(value: TableViewMode.list, child: Text('Mode List')),
+              const PopupMenuItem(
+                value: TableViewMode.layout,
+                child: Text('Mode Denah'),
+              ),
+              const PopupMenuItem(
+                value: TableViewMode.grid,
+                child: Text('Mode Grid'),
+              ),
+              const PopupMenuItem(
+                value: TableViewMode.list,
+                child: Text('Mode List'),
+              ),
             ],
           ),
         ],
@@ -250,10 +338,10 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
             child: tables.isEmpty
                 ? _buildEmptyState()
                 : _viewMode == TableViewMode.layout
-                    ? _buildLayoutView()
-                    : _viewMode == TableViewMode.grid
-                        ? _buildGridView()
-                        : _buildListView(),
+                ? _buildLayoutView()
+                : _viewMode == TableViewMode.grid
+                ? _buildGridView()
+                : _buildListView(),
           ),
         ],
       ),
@@ -303,7 +391,10 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
           const SizedBox(height: 16),
           Text(
             'Belum ada meja',
-            style: GoogleFonts.plusJakartaSans(color: Colors.grey, fontSize: 16),
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.grey,
+              fontSize: 16,
+            ),
           ),
         ],
       ),
@@ -349,7 +440,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: Colors.grey[200]!),
               ),
               child: GridPaper(
                 color: Colors.grey.withOpacity(0.05),
@@ -380,31 +471,34 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                   table['y'] = (newY / 10).roundToDouble() * 10;
                 });
               },
-              child: _buildCinemaSeat(table, isDragging: true),
+              child: _buildVisualTable(table, isDragging: true),
             )
           : BounceTapper(
               onTap: () => _showTableForm(table: table),
-              child: _buildCinemaSeat(table),
+              child: _buildVisualTable(table),
             ),
     );
   }
 
-  Widget _buildCinemaSeat(Map<String, dynamic> table, {bool isDragging = false}) {
+  Widget _buildVisualTable(
+    Map<String, dynamic> table, {
+    bool isDragging = false,
+  }) {
     bool isAvailable = table['status'] == 'Tersedia';
     bool isOccupied = table['status'] == 'Terisi';
 
     return Container(
-      width: 50,
-      height: 50,
+      width: 60,
+      height: 60,
       decoration: BoxDecoration(
         color: isDragging
             ? Colors.blue.withOpacity(0.5)
             : isOccupied
-                ? Colors.red[400]
-                : isAvailable
-                    ? Colors.green[400]
-                    : Colors.grey,
-        borderRadius: BorderRadius.circular(8),
+            ? Colors.red[400]
+            : isAvailable
+            ? Warna.Primary
+            : Colors.grey,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -413,7 +507,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
           ),
         ],
         border: Border.all(
-          color: isDragging ? Colors.blue : Colors.white,
+          color: isDragging ? Colors.blue : Colors.white.withOpacity(0.5),
           width: 2,
         ),
       ),
@@ -426,10 +520,24 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
               style: GoogleFonts.plusJakartaSans(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 14,
               ),
             ),
-            const Icon(TablerIcons.users, size: 10, color: Colors.white70),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(TablerIcons.users, size: 10, color: Colors.white70),
+                const SizedBox(width: 2),
+                Text(
+                  table['capacity'].toString(),
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white70,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -438,39 +546,60 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
 
   Widget _buildCompactCard(Map<String, dynamic> table) {
     bool isAvailable = table['status'] == 'Tersedia';
+    bool isOccupied = table['status'] == 'Terisi';
 
     return BounceTapper(
       onTap: () => _showTableForm(table: table),
       child: Container(
+        width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+          color: isOccupied
+              ? Colors.red[400]
+              : isAvailable
+              ? Warna.Primary
+              : Colors.grey[400],
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: (isAvailable ? Colors.green : Colors.red).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Icon(
-                TablerIcons.armchair,
-                size: 16,
-                color: isAvailable ? Colors.green : Colors.red,
-              ),
-            ),
-            const SizedBox(height: 8),
             Text(
               table['name'],
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13),
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w900,
+                fontSize: 24,
+                color: Colors.white,
+              ),
             ),
-            Text(
-              table['area'],
-              style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.grey),
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(TablerIcons.users, size: 12, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Cap: ${table['capacity']}',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -480,52 +609,104 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
 
   Widget _buildListTile(Map<String, dynamic> table) {
     bool isAvailable = table['status'] == 'Tersedia';
+    bool isOccupied = table['status'] == 'Terisi';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: (isAvailable ? Colors.green : Colors.red).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color:
+                  (isOccupied
+                          ? Colors.red
+                          : isAvailable
+                          ? Warna.Primary
+                          : Colors.grey)
+                      .withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
               child: Text(
                 table['name'],
                 style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.bold,
-                  color: isAvailable ? Colors.green : Colors.red,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  color: isOccupied
+                      ? Colors.red
+                      : isAvailable
+                      ? Warna.Primary
+                      : Colors.grey,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Meja ${table['name']} - ${table['area']}',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                  'Meja ${table['name']} • ${table['area']}',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
                 ),
-                Text(
-                  'Kapasitas: ${table['capacity']} orang',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: (isOccupied ? Colors.red : Colors.green)
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        table['status'],
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isOccupied ? Colors.red : Colors.green,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(TablerIcons.users, size: 12, color: Colors.grey[400]),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${table['capacity']} Kursi',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           IconButton(
             onPressed: () => _showTableForm(table: table),
-            icon: const Icon(TablerIcons.pencil, size: 20, color: Colors.blue),
+            icon: Icon(TablerIcons.edit, size: 20, color: Warna.Secondary),
           ),
           IconButton(
             onPressed: () => _deleteTable(table),
