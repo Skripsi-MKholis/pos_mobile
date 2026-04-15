@@ -8,6 +8,7 @@ import 'package:pos_mobile/pages/shared/pengaturan_page.dart';
 import 'package:pos_mobile/pages/karyawan/riwayat_transaksi_page.dart';
 import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:pos_mobile/pages/shared/menu_page.dart';
+import 'package:pos_mobile/pages/pelanggan/beranda_pelanggan_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
@@ -130,9 +131,9 @@ class _MainScreenState extends State<MainScreen> {
       // Pelanggan
       return [
         {
-          'icon': Icons.shopping_basket_rounded,
-          'text': 'Katalog',
-          'page': MenuPage(role: widget.role),
+          'icon': Icons.home_rounded,
+          'text': 'Beranda',
+          'page': const BerandaPelangganPage(),
         },
         {
           'icon': Icons.history,
