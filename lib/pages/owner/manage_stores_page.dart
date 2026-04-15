@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
@@ -39,7 +39,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Kelola Seluruh Toko',
         isCenter: true,
@@ -52,7 +52,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
             },
             icon: Icon(
               _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -92,7 +92,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
             MaterialPageRoute(builder: (context) => const KelolaTokoPage()),
           );
         },
-        backgroundColor: Warna.Primary,
+        backgroundColor: Warna.primary,
         icon: const Icon(TablerIcons.plus, color: Colors.white),
         label: Text(
           'Tambah Toko',
@@ -113,7 +113,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -129,12 +129,12 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Warna.Primary.withOpacity(0.1),
+                    color: Warna.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
                     TablerIcons.building_store,
-                    color: Warna.Primary,
+                    color: Warna.primary,
                     size: 30,
                   ),
                 ),
@@ -230,7 +230,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                     icon: const Icon(TablerIcons.edit, size: 18),
                     label: const Text('Kelola'),
                     style: TextButton.styleFrom(
-                      foregroundColor: Warna.Primary,
+                      foregroundColor: Warna.primary,
                     ),
                   ),
                 ),
@@ -244,7 +244,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                         }
                         _stores[index]['status'] = 'active';
                       });
-                      MySnackBar(
+                      mySnackBar(
                         context: context,
                         text: 'Toko ${store['name']} terpilih',
                         status: ToastStatus.success,
@@ -266,7 +266,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.05),
+                      color: Colors.red.withValues(alpha: 0.05),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -311,7 +311,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                 _stores.removeAt(index);
               });
               Navigator.pop(context);
-              MySnackBar(
+              mySnackBar(
                 context: context,
                 text: 'Toko berhasil dihapus',
                 status: ToastStatus.error,
@@ -338,7 +338,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -356,12 +356,12 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                     width: 45,
                     height: 45,
                     decoration: BoxDecoration(
-                      color: Warna.Primary.withOpacity(0.1),
+                      color: Warna.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       TablerIcons.building_store,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                       size: 24,
                     ),
                   ),
@@ -417,7 +417,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                     );
                   },
                   icon:
-                      const Icon(TablerIcons.edit, size: 18, color: Warna.Primary),
+                      const Icon(TablerIcons.edit, size: 18, color: Warna.primary),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
@@ -429,7 +429,7 @@ class _ManageStoresPageState extends State<ManageStoresPage> {
                       }
                       _stores[index]['status'] = 'active';
                     });
-                    MySnackBar(
+                    mySnackBar(
                       context: context,
                       text: 'Toko ${store['name']} terpilih',
                       status: ToastStatus.success,

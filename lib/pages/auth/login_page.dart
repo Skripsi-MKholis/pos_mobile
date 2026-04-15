@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:pos_mobile/pages/auth/register_page.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
@@ -54,13 +54,13 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Warna.Primary.withOpacity(0.1),
+                        color: Warna.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         TablerIcons.device_mobile,
                         size: 48,
-                        color: Warna.Primary,
+                        color: Warna.primary,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Warna.Primary,
+                        color: Warna.primary,
                       ),
                     ),
                     Text(
@@ -128,17 +128,17 @@ class _LoginPageState extends State<LoginPage> {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? Warna.Primary : Colors.white,
+                            color: isSelected ? Warna.primary : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? Warna.Primary
+                                  ? Warna.primary
                                   : Colors.grey.shade200,
                             ),
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                      color: Warna.Primary.withOpacity(0.3),
+                                      color: Warna.primary.withValues(alpha: 0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
                                     ),
@@ -200,19 +200,19 @@ class _LoginPageState extends State<LoginPage> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 32),
 
-              myButtonPrimary(
+              MyButtonPrimary(
                 onPressed: () {
                   // Simulate Login logic
                   /*  if (_emailController.text.isEmpty ||
                       _passwordController.text.isEmpty) {
-                    MySnackBar(
+                    mySnackBar(
                       context: context,
                       text: 'Terdapat input kosong!',
                       status: ToastStatus.warning,
@@ -223,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                   // For trial purpose, just pass the selected role
                   widget.onLoginSuccess(_selectedRole);
                 },
-                backgroundColor: Warna.Primary,
+                backgroundColor: Warna.primary,
                 foregroundColor: Colors.white,
                 child: Text(
                   'Masuk Sekarang',
@@ -258,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                         'Daftar Disini',
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.bold,
-                          color: Warna.Primary,
+                          color: Warna.primary,
                         ),
                       ),
                     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:pos_mobile/pages/karyawan/kasir_page.dart';
@@ -26,7 +26,7 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -68,7 +68,7 @@ class _MenuPageState extends State<MenuPage> {
                       'title': 'Kasir (POS)',
                       'subtitle': 'Transaksi Penjualan',
                       'icon': Icons.point_of_sale,
-                      'color': Warna.Primary,
+                      'color': Warna.primary,
                       'onTap': () => _navigateTo(context, const KasirPage()),
                       'roles': ['Owner', 'Karyawan'],
                     },
@@ -122,7 +122,7 @@ class _MenuPageState extends State<MenuPage> {
                       'icon': TablerIcons.users,
                       'color': Colors.pink[400]!,
                       'onTap': () {
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Fitur Manajemen Pelanggan segera hadir',
                           status: ToastStatus.info,
@@ -145,7 +145,7 @@ class _MenuPageState extends State<MenuPage> {
                       'icon': TablerIcons.user,
                       'color': Colors.teal[400]!,
                       'onTap': () {
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Menuju Profil ${widget.role}',
                           status: ToastStatus.info,
@@ -191,14 +191,14 @@ class _MenuPageState extends State<MenuPage> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Warna.Primary, Warna.Secondary],
+                    colors: [Warna.primary, Warna.secondary],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Warna.Primary.withOpacity(0.3),
+                      color: Warna.primary.withValues(alpha: 0.3),
                       blurRadius: 15,
                       offset: const Offset(0, 8),
                     ),
@@ -228,7 +228,7 @@ class _MenuPageState extends State<MenuPage> {
                           Text(
                             'Sistem POS Mobile v1.0.0 Aktif',
                             style: GoogleFonts.plusJakartaSans(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 12,
                             ),
                           ),
@@ -249,16 +249,16 @@ class _MenuPageState extends State<MenuPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Warna.Primary,
+        color: Warna.primary,
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Warna.Primary, Warna.Primary.withOpacity(0.8)],
+          colors: [Warna.primary, Warna.primary.withValues(alpha: 0.8)],
         ),
         boxShadow: [
           BoxShadow(
-            color: Warna.Primary.withOpacity(0.3),
+            color: Warna.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -274,7 +274,7 @@ class _MenuPageState extends State<MenuPage> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -292,7 +292,7 @@ class _MenuPageState extends State<MenuPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                       ),
                     ],
@@ -300,7 +300,7 @@ class _MenuPageState extends State<MenuPage> {
                   child: const Center(
                     child: Icon(
                       TablerIcons.building_store,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                       size: 30,
                     ),
                   ),
@@ -332,7 +332,7 @@ class _MenuPageState extends State<MenuPage> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -351,7 +351,7 @@ class _MenuPageState extends State<MenuPage> {
                         'Jl. Sudirman No. 123, Jakarta',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -434,7 +434,7 @@ class _MenuPageState extends State<MenuPage> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -448,7 +448,7 @@ class _MenuPageState extends State<MenuPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 
@@ -101,7 +101,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
     super.dispose();
   }
 
-  void _showTableForm({Map<String, dynamic>? table, int? index}) {
+  void _showTableForm({Map<String, dynamic>? table}) {
     final nameController = TextEditingController(text: table?['name'] ?? '');
     final capacityController = TextEditingController(
       text: table?['capacity']?.toString() ?? '2',
@@ -166,8 +166,9 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                       selectedValue: selectedArea,
                       items: ['Indoor', 'Outdoor', 'VIP Room'],
                       onChanged: (val) {
-                        if (val != null)
+                        if (val != null) {
                           setModalState(() => selectedArea = val);
+                        }
                       },
                     ),
                     const SizedBox(height: 16),
@@ -176,16 +177,17 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                       selectedValue: selectedStatus,
                       items: ['Tersedia', 'Terisi'],
                       onChanged: (val) {
-                        if (val != null)
+                        if (val != null) {
                           setModalState(() => selectedStatus = val);
+                        }
                       },
                     ),
                     const SizedBox(height: 16),
                     const SizedBox(height: 30),
-                    myButtonPrimary(
+                    MyButtonPrimary(
                       onPressed: () {
                         if (nameController.text.isEmpty) {
-                          MySnackBar(
+                          mySnackBar(
                             context: context,
                             text: 'Nama meja wajib diisi',
                             status: ToastStatus.error,
@@ -209,7 +211,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                         setState(() {
                           if (table == null) {
                             tables.add(newTable);
-                            MySnackBar(
+                            mySnackBar(
                               context: context,
                               text: 'Meja berhasil ditambahkan',
                               status: ToastStatus.success,
@@ -222,7 +224,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                             if (masterIndex != -1) {
                               tables[masterIndex] = newTable;
                             }
-                            MySnackBar(
+                            mySnackBar(
                               context: context,
                               text: 'Meja berhasil diperbarui',
                               status: ToastStatus.success,
@@ -231,7 +233,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                         });
                         Navigator.pop(context);
                       },
-                      backgroundColor: Warna.Primary,
+                      backgroundColor: Warna.primary,
                       foregroundColor: Colors.white,
                       child: Text(
                         'Simpan',
@@ -270,7 +272,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                 tables.removeWhere((t) => t['id'] == table['id']);
               });
               Navigator.pop(context);
-              MySnackBar(
+              mySnackBar(
                 context: context,
                 text: 'Meja berhasil dihapus',
                 status: ToastStatus.success,
@@ -286,7 +288,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Kelola Meja',
         isCenter: true,
@@ -347,7 +349,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showTableForm(),
-        backgroundColor: Warna.Primary,
+        backgroundColor: Warna.primary,
         child: const Icon(TablerIcons.plus, color: Colors.white),
       ),
     );
@@ -375,7 +377,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
           Switch(
             value: _isEditMode,
             onChanged: (val) => setState(() => _isEditMode = val),
-            activeColor: Colors.red,
+            activeThumbColor: Colors.red,
           ),
         ],
       ),
@@ -443,13 +445,13 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                 border: Border.all(color: Colors.grey[200]!),
               ),
               child: GridPaper(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
                 divisions: 1,
                 subdivisions: 5,
                 interval: 100,
               ),
             ),
-            ...tables.map((table) => _buildPositionedTable(table)).toList(),
+            ...tables.map((table) => _buildPositionedTable(table)),
           ],
         ),
       ),
@@ -492,22 +494,22 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
       height: 60,
       decoration: BoxDecoration(
         color: isDragging
-            ? Colors.blue.withOpacity(0.5)
+            ? Colors.blue.withValues(alpha: 0.5)
             : isOccupied
             ? Colors.red[400]
             : isAvailable
-            ? Warna.Primary
+            ? Warna.primary
             : Colors.grey,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
         border: Border.all(
-          color: isDragging ? Colors.blue : Colors.white.withOpacity(0.5),
+          color: isDragging ? Colors.blue : Colors.white.withValues(alpha: 0.5),
           width: 2,
         ),
       ),
@@ -556,12 +558,12 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
           color: isOccupied
               ? Colors.red[400]
               : isAvailable
-              ? Warna.Primary
+              ? Warna.primary
               : Colors.grey[400],
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -582,7 +584,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -619,7 +621,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -635,9 +637,9 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                   (isOccupied
                           ? Colors.red
                           : isAvailable
-                          ? Warna.Primary
+                          ? Warna.primary
                           : Colors.grey)
-                      .withOpacity(0.1),
+                      .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
@@ -649,7 +651,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                   color: isOccupied
                       ? Colors.red
                       : isAvailable
-                      ? Warna.Primary
+                      ? Warna.primary
                       : Colors.grey,
                 ),
               ),
@@ -677,7 +679,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
                       ),
                       decoration: BoxDecoration(
                         color: (isOccupied ? Colors.red : Colors.green)
-                            .withOpacity(0.1),
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -706,7 +708,7 @@ class _ManageTablesPageState extends State<ManageTablesPage> {
           ),
           IconButton(
             onPressed: () => _showTableForm(table: table),
-            icon: Icon(TablerIcons.edit, size: 20, color: Warna.Secondary),
+            icon: Icon(TablerIcons.edit, size: 20, color: Warna.secondary),
           ),
           IconButton(
             onPressed: () => _deleteTable(table),

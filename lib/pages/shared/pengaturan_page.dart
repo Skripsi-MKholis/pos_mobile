@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
+
 import 'package:pos_mobile/pages/owner/manage_products_page.dart';
 import 'package:pos_mobile/pages/owner/manage_categories_page.dart';
 import 'package:pos_mobile/pages/owner/manage_stores_page.dart';
@@ -40,7 +40,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
   String _closeTime = '21:00';
 
   void _showComingSoon(BuildContext context, String feature) {
-    MySnackBar(
+    mySnackBar(
       context: context,
       text: '$feature akan segera hadir!',
       status: ToastStatus.info,
@@ -48,7 +48,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
   }
 
   void _saveSettings() {
-    MySnackBar(
+    mySnackBar(
       context: context,
       text: 'Pengaturan toko berhasil disimpan',
       status: ToastStatus.success,
@@ -66,7 +66,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
       _openTime = '08:00';
       _closeTime = '21:00';
     });
-    MySnackBar(
+    mySnackBar(
       context: context,
       text: 'Perubahan dibatalkan',
       status: ToastStatus.info,
@@ -78,16 +78,16 @@ class _PengaturanPageState extends State<PengaturanPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: Warna.BG,
+        backgroundColor: Warna.bg,
         body: Column(
           children: [
             // Tab Bar
             Container(
               color: Colors.white,
               child: TabBar(
-                labelColor: Warna.Primary,
+                labelColor: Warna.primary,
                 unselectedLabelColor: Colors.grey,
-                indicatorColor: Warna.Primary,
+                indicatorColor: Warna.primary,
                 indicatorWeight: 3,
                 labelStyle: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.bold,
@@ -232,7 +232,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -241,7 +241,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                     child: const Icon(
                       TablerIcons.building_store,
                       size: 40,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                   Positioned(
@@ -252,7 +252,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Warna.Primary,
+                          color: Warna.primary,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -356,7 +356,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
             Row(
               children: [
                 Expanded(
-                  child: myButtonPrimary(
+                  child: MyButtonPrimary(
                     onPressed: _resetSettings,
                     backgroundColor: Colors.grey,
                     foregroundColor: Colors.black,
@@ -372,9 +372,9 @@ class _PengaturanPageState extends State<PengaturanPage> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: myButtonPrimary(
+                  child: MyButtonPrimary(
                     onPressed: _saveSettings,
-                    backgroundColor: Warna.Primary,
+                    backgroundColor: Warna.primary,
                     foregroundColor: Colors.white,
                     child: Text(
                       'Simpan',
@@ -445,7 +445,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -457,9 +457,9 @@ class _PengaturanPageState extends State<PengaturanPage> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isDestructive
-                ? Colors.red.withOpacity(0.1)
+                ? Colors.red.withValues(alpha: 0.1)
                 : (iconColor != null
-                      ? iconColor.withOpacity(0.1)
+                      ? iconColor.withValues(alpha: 0.1)
                       : Colors.grey[100]),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -482,13 +482,13 @@ class _PengaturanPageState extends State<PengaturanPage> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 12,
             color: isDestructive
-                ? Colors.red.withOpacity(0.7)
+                ? Colors.red.withValues(alpha: 0.7)
                 : Colors.grey[600],
           ),
         ),
         trailing: Icon(
           TablerIcons.chevron_right,
-          color: isDestructive ? Colors.red.withOpacity(0.5) : Colors.grey[400],
+          color: isDestructive ? Colors.red.withValues(alpha: 0.5) : Colors.grey[400],
           size: 18,
         ),
         onTap: onTap,
@@ -505,7 +505,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Warna.Primary,
+              primary: Warna.primary,
               onPrimary: Colors.white,
               onSurface: Colors.black87,
             ),

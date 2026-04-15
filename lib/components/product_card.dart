@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'Components.dart';
+import 'components.dart';
 
 class MyProductCard extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -60,11 +60,11 @@ class MyProductCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isSelected
-            ? Warna.Primary.withValues(alpha: 0.05)
+            ? Warna.primary.withValues(alpha: 0.05)
             : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: isSelected
-            ? Border.all(color: Warna.Primary.withValues(alpha: 0.3), width: 1)
+            ? Border.all(color: Warna.primary.withValues(alpha: 0.3), width: 1)
             : null,
         boxShadow: [
           BoxShadow(
@@ -85,7 +85,7 @@ class MyProductCard extends StatelessWidget {
                   if (isSelectionMode) ...[
                     Icon(
                       isSelected ? TablerIcons.checkbox : TablerIcons.square,
-                      color: isSelected ? Warna.Primary : Colors.grey[400],
+                      color: isSelected ? Warna.primary : Colors.grey[400],
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -157,7 +157,7 @@ class MyProductCard extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Warna.Primary.withValues(alpha: 0.1),
+                                  color: Warna.primary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -165,7 +165,7 @@ class MyProductCard extends StatelessWidget {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Warna.Primary,
+                                    color: Warna.primary,
                                   ),
                                 ),
                               ),
@@ -265,10 +265,10 @@ class MyProductCard extends StatelessWidget {
   Widget _buildGridCard(BuildContext context, NumberFormat fmt) {
     return Container(
       decoration: BoxDecoration(
-        color: isSelected ? Warna.Primary.withValues(alpha: 0.05) : Colors.white,
+        color: isSelected ? Warna.primary.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: isSelected
-            ? Border.all(color: Warna.Primary.withValues(alpha: 0.3), width: 1.5)
+            ? Border.all(color: Warna.primary.withValues(alpha: 0.3), width: 1.5)
             : null,
         boxShadow: [
           BoxShadow(
@@ -356,7 +356,7 @@ class MyProductCard extends StatelessWidget {
                             const Icon(
                               TablerIcons.layers_intersect,
                               size: 14,
-                              color: Warna.Primary,
+                              color: Warna.primary,
                             ),
                           ],
                         ],
@@ -395,7 +395,7 @@ class MyProductCard extends StatelessWidget {
                     isSelected
                         ? TablerIcons.circle_check_filled
                         : TablerIcons.circle,
-                    color: isSelected ? Warna.Primary : Colors.grey[300],
+                    color: isSelected ? Warna.primary : Colors.grey[300],
                     size: 24,
                   ),
                 ),
@@ -538,7 +538,7 @@ class MyProductCard extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: isGridView ? 13 : 14,
               fontWeight: FontWeight.bold,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
         ],
@@ -549,7 +549,7 @@ class MyProductCard extends StatelessWidget {
         style: GoogleFonts.plusJakartaSans(
           fontSize: isGridView ? 13 : 14,
           fontWeight: FontWeight.bold,
-          color: Warna.Primary,
+          color: Warna.primary,
         ),
       );
     }
@@ -588,12 +588,12 @@ class MyProductCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Warna.Primary.withValues(alpha: 0.2),
+              color: Warna.primary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
               TablerIcons.plus,
-              color: Warna.Primary,
+              color: Warna.primary,
               size: 14,
             ),
           ),
