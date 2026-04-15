@@ -23,18 +23,26 @@ class _KatalogPelangganPageState extends State<KatalogPelangganPage> {
 
   String _selectedCategory = 'Semua';
   String _searchQuery = '';
-  // Item key: name + | + variant_slug
-  final Map<String, Map<String, dynamic>> _cart = {};
+  // Outer key: productName, Inner key: compositeKey (name + | + variant_slug + | + note)
+  final Map<String, Map<String, Map<String, dynamic>>> _cart = {};
   DateTime _lastButtonTap = DateTime.fromMillisecondsSinceEpoch(0);
 
   int get totalItems {
-    return _cart.values.fold(0, (sum, item) => sum + (item['qty'] as int));
+    int total = 0;
+    _cart.forEach((productName, variants) {
+      variants.forEach((key, item) {
+        total += (item['qty'] as int);
+      });
+    });
+    return total;
   }
 
   double get totalPrice {
     double total = 0;
-    _cart.forEach((key, item) {
-      total += (item['totalPrice'] as num) * (item['qty'] as int);
+    _cart.forEach((productName, variants) {
+      variants.forEach((key, item) {
+        total += (item['totalPrice'] as num) * (item['qty'] as int);
+      });
     });
     return total;
   }
@@ -302,8 +310,10 @@ class _KatalogPelangganPageState extends State<KatalogPelangganPage> {
 
   void _goToCart() {
     List<Map<String, dynamic>> selectedItems = [];
-    _cart.forEach((key, item) {
-      selectedItems.add(Map<String, dynamic>.from(item));
+    _cart.forEach((productName, variants) {
+      variants.forEach((key, item) {
+        selectedItems.add(Map<String, dynamic>.from(item));
+      });
     });
 
     Navigator.push(
@@ -412,11 +422,12 @@ class _KatalogPelangganPageState extends State<KatalogPelangganPage> {
 
   int _getProductQty(String productName) {
     int total = 0;
-    _cart.forEach((key, item) {
-      if (item['name'] == productName) {
+    final variants = _cart[productName];
+    if (variants != null) {
+      variants.forEach((key, item) {
         total += (item['qty'] as int);
-      }
-    });
+      });
+    }
     return total;
   }
 
@@ -591,13 +602,16 @@ class _KatalogPelangganPageState extends State<KatalogPelangganPage> {
 
       String key = '${product['name']}|$variantNames|${note ?? ''}';
 
-      if (_cart.containsKey(key)) {
-        _cart[key]!['qty']++;
+      final productMap = _cart.putIfAbsent(product['name'], () => {});
+      if (productMap.containsKey(key)) {
+        productMap[key]!['qty']++;
       } else {
-        _cart[key] = {
+        productMap[key] = {
           'name': product['name'],
           'price': product['price'], // Original price
-          'totalPrice': customPrice ?? product['price'], // Final price after adjustments
+          'totalPrice':
+              customPrice ??
+              product['price'], // Final price after adjustments
           'image': product['image'],
           'qty': 1,
           'selectedOptions': selectedOptions ?? [],
@@ -611,19 +625,16 @@ class _KatalogPelangganPageState extends State<KatalogPelangganPage> {
   void _decrementLegacy(String productName) {
     setState(() {
       _lastButtonTap = DateTime.now();
-      String? keyToModify;
-      for (var key in _cart.keys) {
-        if (_cart[key]!['name'] == productName) {
-          keyToModify = key;
-          break;
-        }
-      }
-
-      if (keyToModify != null) {
-        if (_cart[keyToModify]!['qty'] > 1) {
-          _cart[keyToModify]!['qty']--;
+      final variants = _cart[productName];
+      if (variants != null && variants.isNotEmpty) {
+        String keyToModify = variants.keys.first;
+        if (variants[keyToModify]!['qty'] > 1) {
+          variants[keyToModify]!['qty']--;
         } else {
-          _cart.remove(keyToModify);
+          variants.remove(keyToModify);
+          if (variants.isEmpty) {
+            _cart.remove(productName);
+          }
         }
       }
     });
