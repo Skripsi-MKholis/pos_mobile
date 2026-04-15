@@ -1,5 +1,5 @@
 import 'package:bounce_tapper/bounce_tapper.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/pages/shared/kosong_page.dart';
@@ -30,9 +30,9 @@ Widget buildUserCard(
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Warna.Primary.withOpacity(0.05),
+        color: Warna.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Warna.Primary.withOpacity(0.1)),
+        border: Border.all(color: Warna.primary.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [
@@ -51,7 +51,7 @@ Widget buildUserCard(
                 fullName,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
-                  color: Warna.Primary,
+                  color: Warna.primary,
                   fontWeight: FontWeight.bold,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -70,7 +70,7 @@ Widget buildUserCard(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-              color: Warna.Primary,
+              color: Warna.primary,
               borderRadius: BorderRadius.circular(25),
             ),
             child: Text(
@@ -114,7 +114,7 @@ class RatingBar extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Divider(color: Warna.Line.withOpacity(0.3)),
+          Divider(color: Warna.line.withValues(alpha: 0.3)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -138,7 +138,7 @@ class RatingBar extends StatelessWidget {
               value: percentage / 100,
               minHeight: 14,
               backgroundColor: Colors.grey.shade200,
-              valueColor: AlwaysStoppedAnimation<Color>(Warna.Primary),
+              valueColor: AlwaysStoppedAnimation<Color>(Warna.primary),
             ),
           ),
         ],

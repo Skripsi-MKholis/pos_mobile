@@ -4,24 +4,25 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pos_mobile/pages/shared/kosong_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
-import 'package:delightful_toast/toast/utils/enums.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String imageUrl;
-  Color color;
-  final actions;
+  final Color color;
+  final List<Widget>? actions;
   final Widget? leading;
-  bool isCenter;
+  final bool isCenter;
 
-  MyAppBar({
+  const MyAppBar({
+    super.key,
     required this.title,
     this.color = Colors.black,
     this.imageUrl = '',
@@ -71,6 +72,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class MyDrawer extends StatelessWidget {
+  const MyDrawer({super.key});
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -95,7 +97,7 @@ class MyDrawer extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
-                    color: Warna.Primary,
+                    color: Warna.primary,
                   ),
                 ),
               ],
@@ -109,8 +111,8 @@ class MyDrawer extends StatelessWidget {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('userRole', 'admin');
               await prefs.setBool('isLoggedIn', true);
-
-              Navigator.pushReplacement(
+                if (!context.mounted) return;
+                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const KosongPage()),
               );
@@ -124,8 +126,8 @@ class MyDrawer extends StatelessWidget {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('userRole', 'dosen');
               await prefs.setBool('isLoggedIn', true);
-
-              Navigator.pushReplacement(
+                if (!context.mounted) return;
+                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const KosongPage()),
               );
@@ -139,8 +141,8 @@ class MyDrawer extends StatelessWidget {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('userRole', 'mahasiswa');
               await prefs.setBool('isLoggedIn', true);
-
-              Navigator.pushReplacement(
+                if (!context.mounted) return;
+                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const KosongPage()),
               );
@@ -154,7 +156,8 @@ class MyDrawer extends StatelessWidget {
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove('userRole');
               await prefs.setBool('isLoggedIn', false);
-              Navigator.pushAndRemoveUntil(
+                if (!context.mounted) return;
+                Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => KosongPage()),
                 (route) => false,
@@ -182,7 +185,7 @@ Widget myDrawerItem(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Warna.BG,
+        color: Warna.bg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -255,7 +258,7 @@ Widget myTextField({
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
-            borderSide: BorderSide(color: Warna.Primary.withOpacity(0.2)),
+            borderSide: BorderSide(color: Warna.primary.withValues(alpha: 0.2)),
           ),
           filled: true,
           fillColor: const Color(0xFFF6F8FA),
@@ -296,7 +299,7 @@ Widget mySelectField({
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: DropdownButtonFormField<String>(
-          value: selectedValue,
+          initialValue: selectedValue,
           onChanged: onChanged,
           icon: const Icon(Icons.arrow_drop_down),
           dropdownColor: Colors.white,
@@ -483,7 +486,7 @@ ButtonStyle myButtonStyle({
     foregroundColor: isOutlined ? backgroundColor : foregroundColor,
 
     elevation: 0,
-    shadowColor: Colors.black.withOpacity(0.5),
+    shadowColor: Colors.black.withValues(alpha: 0.5),
     padding: const EdgeInsets.symmetric(vertical: 14),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radius),
@@ -492,7 +495,7 @@ ButtonStyle myButtonStyle({
   );
 }
 
-class myButtonPrimary extends StatelessWidget {
+class MyButtonPrimary extends StatelessWidget {
   final VoidCallback onPressed;
   final Color backgroundColor;
   final Color foregroundColor;
@@ -501,7 +504,7 @@ class myButtonPrimary extends StatelessWidget {
   final double radius;
   final bool isOutlined;
 
-  const myButtonPrimary({
+  const MyButtonPrimary({
     super.key,
     required this.onPressed,
     this.backgroundColor = const Color(0xffD4D4D8),
@@ -514,7 +517,7 @@ class myButtonPrimary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       child: BounceTapper(
         highlightColor: Colors.transparent,
@@ -537,11 +540,11 @@ class myButtonPrimary extends StatelessWidget {
 }
 
 /* LOADING */
-class myLoading extends StatelessWidget {
+class MyLoading extends StatelessWidget {
   final Color color;
   final double size;
 
-  const myLoading({super.key, this.color = Colors.black, this.size = 35.0});
+  const MyLoading({super.key, this.color = Colors.black, this.size = 35.0});
 
   @override
   Widget build(BuildContext context) {
@@ -563,7 +566,7 @@ class myLoading extends StatelessWidget {
 /* SNACKBAR */
 enum ToastStatus { success, send, error, info, warning }
 
-void MySnackBar({
+void mySnackBar({
   required BuildContext context,
   required String text,
   ToastStatus status = ToastStatus.info,
@@ -572,38 +575,33 @@ void MySnackBar({
 }) {
   // Tentukan warna dan ikon berdasarkan status
   Color bgColor;
-  Color TextColor;
+  Color textColor;
   IconData defaultIcon;
 
   switch (status) {
     case ToastStatus.success:
       bgColor = const Color(0xFFE8FAF0); // green-100
-      TextColor = const Color(0xff1AC966);
+      textColor = const Color(0xff1AC966);
       defaultIcon = TablerIcons.circle_check;
       break;
     case ToastStatus.send:
       bgColor = const Color(0xFFE8FAF0); // green-100
-      TextColor = const Color(0xff1AC966);
+      textColor = const Color(0xff1AC966);
       defaultIcon = TablerIcons.send;
       break;
     case ToastStatus.error:
       bgColor = const Color(0xFFFEE2E2); // red-100
-      TextColor = Colors.red[400]!;
+      textColor = Colors.red[400]!;
       defaultIcon = TablerIcons.circle_x;
       break;
     case ToastStatus.warning:
       bgColor = const Color(0xFFFFF7CD); // yellow-100
-      TextColor = const Color(0xffC4841D);
+      textColor = const Color(0xffC4841D);
       defaultIcon = TablerIcons.alert_circle;
       break;
     case ToastStatus.info:
       bgColor = const Color(0xFFE6F1FE); // yellow-100
-      TextColor = const Color(0xff005BC4);
-      defaultIcon = TablerIcons.info_circle;
-      break;
-    default:
-      bgColor = Colors.white; // blue-100
-      TextColor = Colors.blue[400]!;
+      textColor = const Color(0xff005BC4);
       defaultIcon = TablerIcons.info_circle;
       break;
   }
@@ -613,13 +611,13 @@ void MySnackBar({
     snackbarDuration: duration,
     builder: (context) => ToastCard(
       color: bgColor,
-      leading: Icon(icon ?? defaultIcon, size: 28, color: TextColor),
+      leading: Icon(icon ?? defaultIcon, size: 28, color: textColor),
       title: Text(
         text,
         style: GoogleFonts.plusJakartaSans(
           fontWeight: FontWeight.w700,
           fontSize: 14,
-          color: TextColor,
+          color: textColor,
         ),
       ),
     ),
@@ -630,13 +628,13 @@ void MySnackBar({
 
 class MyDivider extends StatelessWidget {
   const MyDivider({
-    Key? key,
+    super.key,
     this.height = 0,
     this.padding = 0,
     this.dashColor = Colors.grey,
     this.width = double.infinity,
     this.axis = Axis.horizontal,
-  }) : super(key: key);
+  });
 
   final double height;
   final double padding;

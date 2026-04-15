@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
-import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
+import 'package:pos_mobile/components/product_card.dart';
 import 'package:pos_mobile/pages/karyawan/checkout_page.dart';
 import 'package:intl/intl.dart';
 
@@ -24,7 +24,7 @@ class _KasirPageState extends State<KasirPage> {
   // Each item: { 'id': String, 'qty': int, 'selectedVariants': List<Map> }
   // For simplicity since current products use 'name' as identifier:
   // Item key: name + | + variant_slug
-  Map<String, Map<String, dynamic>> _cart = {};
+  final Map<String, Map<String, dynamic>> _cart = {};
   DateTime _lastButtonTap = DateTime.fromMillisecondsSinceEpoch(0);
 
   int get totalItems {
@@ -202,7 +202,7 @@ class _KasirPageState extends State<KasirPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Warna.Primary,
+                    color: Warna.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(TablerIcons.barcode, color: Colors.white),
@@ -216,7 +216,7 @@ class _KasirPageState extends State<KasirPage> {
                   },
                   icon: Icon(
                     _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-                    color: Warna.Primary,
+                    color: Warna.primary,
                   ),
                 ),
               ],
@@ -262,7 +262,7 @@ class _KasirPageState extends State<KasirPage> {
                       ),
                     );
                   },
-                  backgroundColor: Warna.Primary,
+                  backgroundColor: Warna.primary,
                   icon: const Icon(
                     TablerIcons.shopping_cart,
                     color: Colors.white,
@@ -282,7 +282,7 @@ class _KasirPageState extends State<KasirPage> {
               onPressed: () {
                 // Navigasi ke scanner atau show modal
               },
-              backgroundColor: Warna.Primary,
+              backgroundColor: Warna.primary,
               child: const Icon(TablerIcons.scan, color: Colors.white),
             ),
     );
@@ -301,13 +301,13 @@ class _KasirPageState extends State<KasirPage> {
           final isSelected = categories[index] == _selectedCategory;
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-            child: myButtonPrimary(
+            child: MyButtonPrimary(
               onPressed: () {
                 setState(() {
                   _selectedCategory = categories[index];
                 });
               },
-              backgroundColor: isSelected ? Warna.Primary : Colors.white,
+              backgroundColor: isSelected ? Warna.primary : Colors.white,
               foregroundColor: isSelected ? Colors.white : Colors.black,
               isOutlined: !isSelected,
               width: null,
@@ -406,8 +406,9 @@ class _KasirPageState extends State<KasirPage> {
       currencyFormat: fmt,
       quantity: qty,
       onTap: () {
-        if (DateTime.now().difference(_lastButtonTap).inMilliseconds < 400)
+        if (DateTime.now().difference(_lastButtonTap).inMilliseconds < 400) {
           return;
+        }
 
         if (hasVariants) {
           _showVariantPicker(product);
@@ -484,7 +485,7 @@ class _KasirPageState extends State<KasirPage> {
                             Text(
                               fmt.format(product['price']),
                               style: GoogleFonts.plusJakartaSans(
-                                color: Warna.Primary,
+                                color: Warna.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -524,12 +525,12 @@ class _KasirPageState extends State<KasirPage> {
                 // Footer ADD Button
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: myButtonPrimary(
+                  child: MyButtonPrimary(
                     onPressed: () {
                       _addToCart(product, note: noteController.text);
                       Navigator.pop(context);
                     },
-                    backgroundColor: Warna.Primary,
+                    backgroundColor: Warna.primary,
                     foregroundColor: Colors.white,
                     child: const Center(
                       child: Text(
@@ -707,7 +708,7 @@ class _KasirPageState extends State<KasirPage> {
                               Text(
                                 fmt.format(currentPrice),
                                 style: GoogleFonts.plusJakartaSans(
-                                  color: Warna.Primary,
+                                  color: Warna.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -794,12 +795,12 @@ class _KasirPageState extends State<KasirPage> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? Warna.Primary
+                                            ? Warna.primary
                                             : Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                         border: Border.all(
                                           color: isSelected
-                                              ? Warna.Primary
+                                              ? Warna.primary
                                               : Colors.grey[300]!,
                                         ),
                                       ),
@@ -841,7 +842,7 @@ class _KasirPageState extends State<KasirPage> {
                               const SizedBox(height: 20),
                             ],
                           );
-                        }).toList(),
+                        }),
 
                         const SizedBox(height: 10),
                         Text(
@@ -864,7 +865,7 @@ class _KasirPageState extends State<KasirPage> {
                   // Footer ADD Button
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: myButtonPrimary(
+                    child: MyButtonPrimary(
                       onPressed: () {
                         // Validate required
                         for (var v in product['variants']) {
@@ -872,7 +873,7 @@ class _KasirPageState extends State<KasirPage> {
                             if (v['allowMultiple']) {
                               if ((selectedOptionsMap[v['name']] as List)
                                   .isEmpty) {
-                                MySnackBar(
+                                mySnackBar(
                                   context: context,
                                   text: 'Pilih ${v['name']} terlebih dahulu',
                                   status: ToastStatus.error,
@@ -881,7 +882,7 @@ class _KasirPageState extends State<KasirPage> {
                               }
                             } else {
                               if (selectedOptionsMap[v['name']] == null) {
-                                MySnackBar(
+                                mySnackBar(
                                   context: context,
                                   text: 'Pilih ${v['name']} terlebih dahulu',
                                   status: ToastStatus.error,
@@ -900,7 +901,7 @@ class _KasirPageState extends State<KasirPage> {
                         );
                         Navigator.pop(context);
                       },
-                      backgroundColor: Warna.Primary,
+                      backgroundColor: Warna.primary,
                       foregroundColor: Colors.white,
                       child: Center(
                         child: Text(
@@ -980,11 +981,11 @@ class _KasirPageState extends State<KasirPage> {
               ),
             ),
             const SizedBox(height: 24),
-            myButtonPrimary(
+            MyButtonPrimary(
               onPressed: () {
                 // Navigasi ke halaman tambah produk (Master Produk)
               },
-              backgroundColor: Warna.Primary,
+              backgroundColor: Warna.primary,
               foregroundColor: Colors.white,
               isOutlined: false,
               width: 200,

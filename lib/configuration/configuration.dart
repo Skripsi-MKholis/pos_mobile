@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 class Warna {
-  static const Color Primary = Color(0xFFAD8764);
-  static const Color Secondary = Color(0xFFD0A175);
-  static const Color Tertiary = Color(0xFF5D6D7E);
-  static const Color Neutral = Color(0xFFF4EFEA);
+  static const Color primary = Color(0xFFAD8764);
+  static const Color secondary = Color(0xFFD0A175);
+  static const Color tertiary = Color(0xFF5D6D7E);
+  static const Color neutral = Color(0xFFF4EFEA);
 
-  static const Color Black = Color(0xFF222222);
-  static const Color TextBold = Color(0xFF222222);
-  static const Color BG = Color(0xffF8FAFC);
-  static const Color Line = Color(0xFFBDC9D5);
+  static const Color black = Color(0xFF222222);
+  static const Color textBold = Color(0xFF222222);
+  static const Color bg = Color(0xffF8FAFC);
+  static const Color line = Color(0xFFBDC9D5);
 
   // Dark mode
-  static const Color DarkBG = Color(0xff141414);
-  static const Color DarkSecondary = Color(0xffE2E8F0);
-  static const Color DarkLine = Color(0xFF334155);
+  static const Color darkBG = Color(0xff141414);
+  static const Color darkSecondary = Color(0xffE2E8F0);
+  static const Color darkLine = Color(0xFF334155);
 }
 
 class HexColor extends Color {
@@ -23,7 +23,7 @@ class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll('#', '');
     if (hexColor.length == 6) {
-      hexColor = 'FF' + hexColor;
+      hexColor = 'FF$hexColor';
     }
     return int.parse(hexColor, radix: 16);
   }
@@ -50,6 +50,7 @@ class PopEffect extends StatefulWidget {
   final PopController? controller;
 
   const PopEffect({
+    super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 150),
     this.scale = 0.9,
