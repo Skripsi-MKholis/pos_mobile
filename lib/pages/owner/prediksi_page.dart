@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:intl/intl.dart';
 
 class PrediksiPage extends StatefulWidget {
@@ -26,7 +26,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(title: 'Prediksi Penjualan', isCenter: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -47,7 +47,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected ? Warna.Primary : Colors.transparent,
+                        color: isSelected ? Warna.primary : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -74,14 +74,14 @@ class _PrediksiPageState extends State<PrediksiPage> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Warna.Primary, Warna.Secondary],
+                colors: [Warna.primary, Warna.secondary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Warna.Primary.withOpacity(0.3),
+                  color: Warna.primary.withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -96,7 +96,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
                     Text(
                       'Estimasi Pendapatan',
                       style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 14,
                       ),
                     ),
@@ -120,7 +120,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
                 Text(
                   '+12% dari periode sebelumnya',
                   style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 12,
                   ),
                 ),
@@ -209,13 +209,13 @@ class _PrediksiPageState extends State<PrediksiPage> {
                             const FlSpot(6, 5),
                           ],
                           isCurved: true,
-                          color: Warna.Primary,
+                          color: Warna.primary,
                           barWidth: 3,
                           isStrokeCapRound: true,
                           dotData: FlDotData(show: true),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Warna.Primary.withOpacity(0.05),
+                            color: Warna.primary.withValues(alpha: 0.05),
                           ),
                         ),
                         LineChartBarData(
@@ -242,7 +242,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildLegend(Warna.Primary, 'Prediksi'),
+                    _buildLegend(Warna.primary, 'Prediksi'),
                     const SizedBox(width: 16),
                     _buildLegend(Colors.grey[300]!, 'Aktual Rata-rata'),
                   ],
@@ -285,9 +285,9 @@ class _PrediksiPageState extends State<PrediksiPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.05),
+              color: Colors.blue.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.blue.withOpacity(0.1)),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,7 +356,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(TablerIcons.package, color: statusColor, size: 24),
@@ -377,7 +377,7 @@ class _PrediksiPageState extends State<PrediksiPage> {
                   suggestion,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
-                    color: Warna.Primary,
+                    color: Warna.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

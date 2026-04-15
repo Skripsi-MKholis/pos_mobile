@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
+
 
 class ProductOverviewPage extends StatefulWidget {
   const ProductOverviewPage({super.key});
@@ -17,7 +17,7 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(title: 'Overview Produk', isCenter: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -112,11 +112,11 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
                     gridData: FlGridData(show: false),
                     borderData: FlBorderData(show: false),
                     barGroups: [
-                      _makeGroupData(0, 85, Warna.Primary),
-                      _makeGroupData(1, 65, Warna.Secondary),
-                      _makeGroupData(2, 45, Warna.Primary),
-                      _makeGroupData(3, 30, Warna.Secondary),
-                      _makeGroupData(4, 20, Warna.Primary),
+                      _makeGroupData(0, 85, Warna.primary),
+                      _makeGroupData(1, 65, Warna.secondary),
+                      _makeGroupData(2, 45, Warna.primary),
+                      _makeGroupData(3, 30, Warna.secondary),
+                      _makeGroupData(4, 20, Warna.primary),
                     ],
                   ),
                 ),
@@ -139,7 +139,7 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
                       PieChartSectionData(
                         value: 40,
                         title: '40%',
-                        color: Warna.Primary,
+                        color: Warna.primary,
                         radius: 50,
                         titleStyle: const TextStyle(
                           fontSize: 12,
@@ -150,7 +150,7 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
                       PieChartSectionData(
                         value: 30,
                         title: '30%',
-                        color: Warna.Secondary,
+                        color: Warna.secondary,
                         radius: 50,
                         titleStyle: const TextStyle(
                           fontSize: 12,
@@ -220,7 +220,7 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
+                          color: Colors.red.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -270,7 +270,7 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -352,7 +352,7 @@ class _ProductOverviewPageState extends State<ProductOverviewPage> {
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
             toY: 100,
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
           ),
         ),
       ],

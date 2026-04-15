@@ -5,17 +5,19 @@ import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/components/components.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:pos_mobile/components/product_card.dart';
-import 'package:pos_mobile/pages/karyawan/checkout_page.dart';
+import 'package:pos_mobile/pages/pelanggan/keranjang_page.dart';
 import 'package:intl/intl.dart';
 
-class KasirPage extends StatefulWidget {
-  const KasirPage({super.key});
+class KatalogPelangganPage extends StatefulWidget {
+  final String mejaInfo;
+
+  const KatalogPelangganPage({super.key, required this.mejaInfo});
 
   @override
-  State<KasirPage> createState() => _KasirPageState();
+  State<KatalogPelangganPage> createState() => _KatalogPelangganPageState();
 }
 
-class _KasirPageState extends State<KasirPage> {
+class _KatalogPelangganPageState extends State<KatalogPelangganPage> {
   final TextEditingController _searchController = TextEditingController();
   bool _isGridView = true;
 
@@ -191,6 +193,61 @@ class _KasirPageState extends State<KasirPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Menu Pesanan',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              widget.mejaInfo,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: Warna.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  _goToCart();
+                },
+                icon: const Icon(TablerIcons.shopping_cart),
+              ),
+              if (totalItems > 0)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      totalItems.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: Column(
         children: [
           Container(
@@ -201,17 +258,8 @@ class _KasirPageState extends State<KasirPage> {
                 Expanded(
                   child: myTextField(
                     controller: _searchController,
-                    placeholder: 'Cari produk...',
+                    placeholder: 'Cari makanan atau minuman...',
                   ),
-                ),
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Warna.primary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(TablerIcons.barcode, color: Colors.white),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
@@ -230,7 +278,7 @@ class _KasirPageState extends State<KasirPage> {
           ),
           _buildCategories(),
           if (products.isEmpty)
-            _buildNoProduct()
+            _buildEmpty()
           else if (filteredProducts.isEmpty)
             _buildEmpty()
           else
@@ -238,61 +286,42 @@ class _KasirPageState extends State<KasirPage> {
         ],
       ),
       floatingActionButton: totalItems > 0
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'clearBtn',
-                  onPressed: () {
-                    setState(() {
-                      _cart.clear();
-                    });
-                  },
-                  backgroundColor: Colors.redAccent,
-                  child: const Icon(TablerIcons.x, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                FloatingActionButton.extended(
-                  heroTag: 'checkoutBtn',
-                  onPressed: () {
-                    List<Map<String, dynamic>> selectedItems = [];
-                    _cart.forEach((productName, variants) {
-                      variants.forEach((key, item) {
-                        selectedItems.add(Map<String, dynamic>.from(item));
-                      });
-                    });
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            CheckoutPage(cartItems: selectedItems),
-                      ),
-                    );
-                  },
-                  backgroundColor: Warna.primary,
-                  icon: const Icon(
-                    TablerIcons.shopping_cart,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    'Checkout ($totalItems)',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : FloatingActionButton(
-              heroTag: 'scanBtn',
+          ? FloatingActionButton.extended(
+              heroTag: 'cartBtn',
               onPressed: () {
-                // Navigasi ke scanner atau show modal
+                _goToCart();
               },
               backgroundColor: Warna.primary,
-              child: const Icon(TablerIcons.scan, color: Colors.white),
-            ),
+              icon: const Icon(
+                TablerIcons.shopping_cart,
+                color: Colors.white,
+              ),
+              label: Text(
+                'Lihat Keranjang ($totalItems)',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          : null,
+    );
+  }
+
+  void _goToCart() {
+    List<Map<String, dynamic>> selectedItems = [];
+    _cart.forEach((productName, variants) {
+      variants.forEach((key, item) {
+        selectedItems.add(Map<String, dynamic>.from(item));
+      });
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            KeranjangPage(cartItems: selectedItems, mejaInfo: widget.mejaInfo),
+      ),
     );
   }
 
@@ -543,7 +572,7 @@ class _KasirPageState extends State<KasirPage> {
                     foregroundColor: Colors.white,
                     child: const Center(
                       child: Text(
-                        'Tambah ke Keranjang',
+                        'Tambah ke Pesanan',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -571,7 +600,6 @@ class _KasirPageState extends State<KasirPage> {
         variantNames = selectedOptions.map((o) => o['name']).join(',');
       }
 
-      // Key includes variants and note to allow separate entries for same product with different notes
       String key = '${product['name']}|$variantNames|${note ?? ''}';
 
       final productMap = _cart.putIfAbsent(product['name'], () => {});
@@ -583,14 +611,12 @@ class _KasirPageState extends State<KasirPage> {
           'price': product['price'], // Original price
           'totalPrice':
               customPrice ??
-              product['price'], // Final price after all adjustments
+              product['price'], // Final price after adjustments
           'image': product['image'],
           'qty': 1,
           'selectedOptions': selectedOptions ?? [],
           'note': note ?? '',
           'appliedDiscount': product['appliedDiscount'],
-          'stock': product['stock'],
-          'isInfiniteStock': product['isInfiniteStock'],
         };
       }
     });
@@ -616,7 +642,6 @@ class _KasirPageState extends State<KasirPage> {
 
   void _showVariantPicker(Map<String, dynamic> product) {
     final TextEditingController noteController = TextEditingController();
-    // Initial required variants selections
     Map<String, dynamic> selectedOptionsMap = {};
     for (var v in product['variants']) {
       if (v['isRequired'] == true && v['allowMultiple'] == false) {
@@ -911,7 +936,7 @@ class _KasirPageState extends State<KasirPage> {
                       foregroundColor: Colors.white,
                       child: Center(
                         child: Text(
-                          'Tambah ke Keranjang - ${fmt.format(currentPrice)}',
+                          'Tambah ke Pesanan - ${fmt.format(currentPrice)}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -949,65 +974,6 @@ class _KasirPageState extends State<KasirPage> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
                 color: Colors.grey[500],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNoProduct() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.shopping_bag_outlined,
-              size: 80,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Belum Ada Produk',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Silakan tambahkan produk pertama Anda\nuntuk mulai berjualan.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
-            ),
-            const SizedBox(height: 24),
-            MyButtonPrimary(
-              onPressed: () {
-                // Navigasi ke halaman tambah produk (Master Produk)
-              },
-              backgroundColor: Warna.primary,
-              foregroundColor: Colors.white,
-              isOutlined: false,
-              width: 200,
-              radius: 12,
-              child: const Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(TablerIcons.plus, color: Colors.white, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Tambah Produk',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
               ),
             ),
           ],

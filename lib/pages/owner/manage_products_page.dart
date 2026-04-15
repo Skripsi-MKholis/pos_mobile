@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_mobile/COMPONENTS/ProductCard.dart';
+import 'package:pos_mobile/components/product_card.dart';
 import 'package:pos_mobile/pages/owner/manage_categories_page.dart';
 import 'package:pos_mobile/pages/owner/manage_discounts_page.dart';
 import 'package:pos_mobile/pages/owner/product_overview_page.dart';
@@ -187,7 +187,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                     onPressed: () {
                       if (nameController.text.isEmpty ||
                           priceController.text.isEmpty) {
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Nama dan harga jual harus diisi!',
                           status: ToastStatus.error,
@@ -216,14 +216,14 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       setState(() {
                         if (product == null) {
                           products.add(newProduct);
-                          MySnackBar(
+                          mySnackBar(
                             context: context,
                             text: 'Produk berhasil ditambahkan',
                             status: ToastStatus.success,
                           );
                         } else {
                           products[index!] = newProduct;
-                          MySnackBar(
+                          mySnackBar(
                             context: context,
                             text: 'Produk berhasil diperbarui',
                             status: ToastStatus.success,
@@ -237,7 +237,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       'Simpan',
                       style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.bold,
-                        color: Warna.Primary,
+                        color: Warna.primary,
                       ),
                     ),
                   ),
@@ -258,7 +258,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         setModalState(() {
                           currentImage = 'https://via.placeholder.com/150';
                         });
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Gambar dipilih (Placeholder)',
                           status: ToastStatus.info,
@@ -324,7 +324,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         ),
                         Switch(
                           value: isInfiniteStock,
-                          activeColor: Warna.Primary,
+                          activeThumbColor: Warna.primary,
                           onChanged: (val) {
                             setModalState(() {
                               isInfiniteStock = val;
@@ -365,8 +365,8 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                                   timestamp.substring(timestamp.length - 10);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Warna.Primary.withOpacity(0.1),
-                              foregroundColor: Warna.Primary,
+                              backgroundColor: Warna.primary.withValues(alpha: 0.1),
+                              foregroundColor: Warna.primary,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -411,7 +411,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                           icon: const Icon(TablerIcons.plus, size: 18),
                           label: const Text('Tambah Varian'),
                           style: TextButton.styleFrom(
-                            foregroundColor: Warna.Primary,
+                            foregroundColor: Warna.primary,
                           ),
                         ),
                       ],
@@ -422,7 +422,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Warna.BG,
+                          color: Warna.bg,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.grey[200]!),
                         ),
@@ -515,7 +515,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
     List<Map<String, dynamic>> options = [];
 
     // Helper to add option
-    void _addOption(StateSetter setVState) {
+    void addOption(StateSetter setVState) {
       final nameCtrl = TextEditingController();
       final priceCtrl = TextEditingController();
       setVState(() {
@@ -559,7 +559,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                   TextButton(
                     onPressed: () {
                       if (variantNameController.text.isEmpty) {
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Nama varian harus diisi!',
                           status: ToastStatus.error,
@@ -567,7 +567,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         return;
                       }
                       if (options.isEmpty) {
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Minimal tambah 1 opsi!',
                           status: ToastStatus.error,
@@ -597,7 +597,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       'Simpan',
                       style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.bold,
-                        color: Warna.Primary,
+                        color: Warna.primary,
                       ),
                     ),
                   ),
@@ -627,7 +627,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         ),
                         Switch(
                           value: isRequired,
-                          activeColor: Warna.Primary,
+                          activeThumbColor: Warna.primary,
                           onChanged: (val) => setVState(() => isRequired = val),
                         ),
                       ],
@@ -644,7 +644,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                         ),
                         Switch(
                           value: allowMultiple,
-                          activeColor: Warna.Primary,
+                          activeThumbColor: Warna.primary,
                           onChanged: (val) => setVState(() => allowMultiple = val),
                         ),
                       ],
@@ -730,10 +730,10 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       },
                     ),
 
-                    myButtonPrimary(
-                      onPressed: () => _addOption(setVState),
-                      backgroundColor: Warna.Primary.withOpacity(0.1),
-                      foregroundColor: Warna.Primary,
+                    MyButtonPrimary(
+                      onPressed: () => addOption(setVState),
+                      backgroundColor: Warna.primary.withValues(alpha: 0.1),
+                      foregroundColor: Warna.primary,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -790,7 +790,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                 _selectedIndices.clear();
               });
               Navigator.pop(context);
-              MySnackBar(
+              mySnackBar(
                 context: context,
                 text: 'Produk terpilih berhasil dihapus',
                 status: ToastStatus.success,
@@ -834,7 +834,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       _selectedIndices.clear();
                     });
                     Navigator.pop(context);
-                    MySnackBar(
+                    mySnackBar(
                       context: context,
                       text: 'Kategori produk terpilih berhasil diubah',
                       status: ToastStatus.success,
@@ -903,7 +903,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                 products.removeAt(index);
               });
               Navigator.pop(context);
-              MySnackBar(
+              mySnackBar(
                 context: context,
                 text: 'Produk berhasil dihapus',
                 status: ToastStatus.success,
@@ -935,13 +935,13 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Warna.BG,
+        backgroundColor: Warna.bg,
         appBar: _isSelectionMode
             ? MyAppBar(
                 title: '${_selectedIndices.length} Terpilih',
                 leading: IconButton(
                   onPressed: _exitSelectionMode,
-                  icon: const Icon(TablerIcons.x, color: Warna.Primary),
+                  icon: const Icon(TablerIcons.x, color: Warna.primary),
                 ),
                 actions: [
                   IconButton(
@@ -950,7 +950,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                       _selectedIndices.length == filteredProducts.length
                           ? TablerIcons.checkbox
                           : TablerIcons.square,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                   IconButton(
@@ -982,7 +982,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                     },
                     icon: const Icon(
                       TablerIcons.discount_2,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                   IconButton(
@@ -996,7 +996,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                     },
                     icon: const Icon(
                       TablerIcons.presentation,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                   IconButton(
@@ -1007,7 +1007,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                     },
                     icon: Icon(
                       _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-                      color: Warna.Primary,
+                      color: Warna.primary,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -1063,12 +1063,12 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? Warna.Primary
+                                          ? Warna.primary
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(
                                         color: isSelected
-                                            ? Warna.Primary
+                                            ? Warna.primary
                                             : Colors.grey[300]!,
                                       ),
                                     ),
@@ -1137,7 +1137,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                             ),
                             child: Icon(
                               TablerIcons.settings,
-                              color: Warna.Primary,
+                              color: Warna.primary,
                               size: 20,
                             ),
                           ),
@@ -1193,7 +1193,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
             ? null
             : FloatingActionButton.extended(
                 onPressed: () => _showProductForm(),
-                backgroundColor: Warna.Primary,
+                backgroundColor: Warna.primary,
                 icon: const Icon(TablerIcons.plus, color: Colors.white),
                 label: const Text(
                   'Tambah Produk',

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:pos_mobile/pages/owner/apply_discount_page.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
@@ -167,17 +167,17 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                           onChanged: (val) {
                             setModalState(() => isActive = val);
                           },
-                          activeColor: Warna.Primary,
+                          activeThumbColor: Warna.primary,
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 32),
-                    myButtonPrimary(
+                    MyButtonPrimary(
                       onPressed: () {
                         if (nameController.text.isEmpty ||
                             valueController.text.isEmpty) {
-                          MySnackBar(
+                          mySnackBar(
                             context: context,
                             text: 'Harap isi semua bidang!',
                             status: ToastStatus.error,
@@ -209,13 +209,13 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                         });
 
                         Navigator.pop(context);
-                        MySnackBar(
+                        mySnackBar(
                           context: context,
                           text: 'Diskon berhasil disimpan',
                           status: ToastStatus.success,
                         );
                       },
-                      backgroundColor: Warna.Primary,
+                      backgroundColor: Warna.primary,
                       foregroundColor: Colors.white,
                       child: const Text(
                         'Simpan',
@@ -257,7 +257,7 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                 discounts.removeAt(index);
               });
               Navigator.pop(context);
-              MySnackBar(
+              mySnackBar(
                 context: context,
                 text: 'Diskon berhasil dihapus',
                 status: ToastStatus.success,
@@ -282,7 +282,7 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
     );
 
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Kelola Diskon',
         isCenter: true,
@@ -295,7 +295,7 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
             },
             icon: Icon(
               _isGridView ? TablerIcons.list : TablerIcons.layout_grid,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -344,13 +344,13 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: isActive
-                                      ? Warna.Primary.withValues(alpha: 0.1)
+                                      ? Warna.primary.withValues(alpha: 0.1)
                                       : Colors.grey[100],
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   TablerIcons.discount_2,
-                                  color: isActive ? Warna.Primary : Colors.grey,
+                                  color: isActive ? Warna.primary : Colors.grey,
                                   size: 24,
                                 ),
                               ),
@@ -373,7 +373,7 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                                 valueDisplay,
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 16,
-                                  color: isActive ? Warna.Primary : Colors.grey,
+                                  color: isActive ? Warna.primary : Colors.grey,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -515,13 +515,13 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: isActive
-                                    ? Warna.Primary.withValues(alpha: 0.1)
+                                    ? Warna.primary.withValues(alpha: 0.1)
                                     : Colors.grey[100],
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Icon(
                                 TablerIcons.discount_2,
-                                color: isActive ? Warna.Primary : Colors.grey,
+                                color: isActive ? Warna.primary : Colors.grey,
                                 size: 24,
                               ),
                             ),
@@ -577,7 +577,7 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
                                     valueDisplay,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 14,
-                                      color: isActive ? Warna.Primary : Colors.grey,
+                                      color: isActive ? Warna.primary : Colors.grey,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -696,7 +696,7 @@ class _ManageDiscountsPageState extends State<ManageDiscountsPage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showDiscountForm(),
-        backgroundColor: Warna.Primary,
+        backgroundColor: Warna.primary,
         child: const Icon(TablerIcons.plus, color: Colors.white),
       ),
     );

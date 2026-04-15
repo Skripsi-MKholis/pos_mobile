@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -14,7 +14,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -61,7 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -98,7 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
             title: 'Transaksi',
             value: '45',
             icon: TablerIcons.receipt,
-            color: Warna.Primary,
+            color: Warna.primary,
           ),
         ),
       ],
@@ -118,7 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -132,7 +132,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 24),

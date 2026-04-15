@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/CONFIGURATION/CONFIGURATION.dart';
-import 'package:pos_mobile/COMPONENTS/Components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:bounce_tapper/bounce_tapper.dart';
 
@@ -45,7 +45,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.BG,
+      backgroundColor: Warna.bg,
       appBar: MyAppBar(
         title: 'Kelola Toko',
         isCenter: true,
@@ -149,16 +149,16 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
               placeholder: 'Contoh: Terima kasih!',
             ),
             const SizedBox(height: 40),
-            myButtonPrimary(
+            MyButtonPrimary(
               onPressed: () {
-                MySnackBar(
+                mySnackBar(
                   context: context,
                   text: 'Perubahan berhasil disimpan',
                   status: ToastStatus.success,
                 );
                 Navigator.pop(context);
               },
-              backgroundColor: Warna.Primary,
+              backgroundColor: Warna.primary,
               foregroundColor: Colors.white,
               child: Text(
                 'Simpan Perubahan',
@@ -181,7 +181,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Warna.Primary,
+        color: Warna.primary,
       ),
     );
   }
@@ -198,7 +198,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -207,7 +207,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
             child: const Icon(
               TablerIcons.building_store,
               size: 50,
-              color: Warna.Primary,
+              color: Warna.primary,
             ),
           ),
           Positioned(
@@ -218,7 +218,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Warna.Primary,
+                  color: Warna.primary,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
@@ -243,7 +243,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
           ),
         ],
@@ -279,7 +279,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
           Switch(
             value: _isStoreOpen,
             onChanged: (val) => setState(() => _isStoreOpen = val),
-            activeColor: Warna.Primary,
+            activeThumbColor: Warna.primary,
           ),
         ],
       ),
@@ -294,7 +294,7 @@ class _KelolaTokoPageState extends State<KelolaTokoPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Warna.Primary,
+              primary: Warna.primary,
               onPrimary: Colors.white,
               onSurface: Colors.black87,
             ),
