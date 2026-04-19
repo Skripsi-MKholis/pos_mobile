@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pos_mobile/pages/shared/kosong_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/configuration/configuration.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
+export 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';

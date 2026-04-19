@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/configuration/configuration.dart';
-import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
-import 'package:pos_mobile/pages/owner/manage_products_page.dart';
-import 'package:pos_mobile/pages/owner/manage_categories_page.dart';
-import 'package:pos_mobile/pages/owner/manage_stores_page.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
+import '../../providers/auth_provider.dart';
+import '../../components/components.dart';
+import '../../configuration/configuration.dart';
+import '../owner/manage_customers_page.dart';
+import '../owner/manage_categories_page.dart';
+import '../owner/manage_stores_page.dart';
+import '../owner/manage_products_page.dart';
 
 class PengaturanPage extends StatefulWidget {
   const PengaturanPage({super.key});
@@ -17,27 +19,29 @@ class PengaturanPage extends StatefulWidget {
 }
 
 class _PengaturanPageState extends State<PengaturanPage> {
-  final TextEditingController _nameController = TextEditingController(
-    text: 'Toko Berkah Jaya',
-  );
-  final TextEditingController _phoneController = TextEditingController(
-    text: '081234567890',
-  );
-  final TextEditingController _emailController = TextEditingController(
-    text: 'berkahjaya@example.com',
-  );
-  final TextEditingController _addressController = TextEditingController(
-    text: 'Jl. Sudirman No. 123, Jakarta Selatan',
-  );
-  final TextEditingController _taxController = TextEditingController(
-    text: '10',
-  );
-  final TextEditingController _serviceController = TextEditingController(
-    text: '5',
-  );
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+  late TextEditingController _emailController;
+  late TextEditingController _addressController;
+  late TextEditingController _taxController;
+  late TextEditingController _serviceController;
 
   String _openTime = '08:00';
   String _closeTime = '21:00';
+
+  @override
+  void initState() {
+    super.initState();
+    final authProvider = context.read<AuthProvider>();
+    final store = authProvider.selectedStore;
+
+    _nameController = TextEditingController(text: store?.name ?? '');
+    _phoneController = TextEditingController(text: ''); // Need store phone in model?
+    _emailController = TextEditingController(text: store?.ownerEmail ?? '');
+    _addressController = TextEditingController(text: '');
+    _taxController = TextEditingController(text: '0');
+    _serviceController = TextEditingController(text: '0');
+  }
 
   void _showComingSoon(BuildContext context, String feature) {
     mySnackBar(
@@ -56,13 +60,12 @@ class _PengaturanPageState extends State<PengaturanPage> {
   }
 
   void _resetSettings() {
+    final store = context.read<AuthProvider>().selectedStore;
     setState(() {
-      _nameController.text = 'Toko Berkah Jaya';
-      _phoneController.text = '081234567890';
-      _emailController.text = 'berkahjaya@example.com';
-      _addressController.text = 'Jl. Sudirman No. 123, Jakarta Selatan';
-      _taxController.text = '10';
-      _serviceController.text = '5';
+      _nameController.text = store?.name ?? '';
+      _emailController.text = store?.ownerEmail ?? '';
+      _taxController.text = '0';
+      _serviceController.text = '0';
       _openTime = '08:00';
       _closeTime = '21:00';
     });
@@ -118,6 +121,10 @@ class _PengaturanPageState extends State<PengaturanPage> {
   }
 
   Widget _buildKelolaTab(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final role = authProvider.activeMembership?.role ?? 'Pelanggan';
+    final isOwner = role == 'Owner';
+
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
@@ -149,17 +156,18 @@ class _PengaturanPageState extends State<PengaturanPage> {
             );
           },
         ),
-        _buildSettingsItem(
-          icon: TablerIcons.building_store,
-          title: 'Daftar Seluruh Toko',
-          subtitle: 'Lihat dan kelola seluruh cabang toko Anda',
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ManageStoresPage()),
-            );
-          },
-        ),
+        if (isOwner)
+          _buildSettingsItem(
+            icon: TablerIcons.building_store,
+            title: 'Daftar Seluruh Toko',
+            subtitle: 'Lihat dan kelola seluruh cabang toko Anda',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ManageStoresPage()),
+              );
+            },
+          ),
 
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -167,17 +175,25 @@ class _PengaturanPageState extends State<PengaturanPage> {
         ),
 
         // --- People Management ---
-        _buildSettingsItem(
-          icon: TablerIcons.users,
-          title: 'Kelola Karyawan / Kasir',
-          subtitle: 'Atur hak akses dan daftar staf toko Anda',
-          onTap: () => _showComingSoon(context, 'Kelola Karyawan'),
-        ),
+        if (isOwner)
+          _buildSettingsItem(
+            icon: TablerIcons.users,
+            title: 'Kelola Karyawan / Kasir',
+            subtitle: 'Atur hak akses dan daftar staf toko Anda',
+            onTap: () => _showComingSoon(context, 'Kelola Karyawan'),
+          ),
         _buildSettingsItem(
           icon: TablerIcons.heart,
           title: 'Kelola Pelanggan',
-          subtitle: 'Daftar pelanggan setia dan program loyalitas',
-          onTap: () => _showComingSoon(context, 'Kelola Pelanggan'),
+          subtitle: 'Daftar pelanggan setia dan riwayat kunjungan',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ManageCustomersPage(),
+              ),
+            );
+          },
         ),
 
         const Padding(
@@ -395,6 +411,8 @@ class _PengaturanPageState extends State<PengaturanPage> {
   }
 
   Widget _buildAplikasiTab(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
@@ -406,6 +424,12 @@ class _PengaturanPageState extends State<PengaturanPage> {
           onTap: () => _showComingSoon(context, 'Upgrade Pro'),
         ),
         const SizedBox(height: 8),
+        _buildSettingsItem(
+          icon: TablerIcons.switch_horizontal,
+          title: 'Pindah Toko',
+          subtitle: 'Ganti outlet atau toko yang aktif',
+          onTap: () => authProvider.selectMembership(null),
+        ),
         _buildSettingsItem(
           icon: TablerIcons.question_circle,
           title: 'Pusat Bantuan',
@@ -424,7 +448,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
           title: 'Log Out',
           subtitle: 'Keluar dari akun Anda secara aman',
           isDestructive: true,
-          onTap: () {},
+          onTap: () => authProvider.logout(),
         ),
       ],
     );

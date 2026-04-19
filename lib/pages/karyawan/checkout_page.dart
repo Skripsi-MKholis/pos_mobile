@@ -1,10 +1,19 @@
-import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pos_mobile/configuration/configuration.dart';
-import 'package:tabler_icons/tabler_icons.dart';
-import 'package:pos_mobile/components/components.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:tabler_icons/tabler_icons.dart';
+import 'package:pos_mobile/repositories/master_repository.dart';
+import 'package:pos_mobile/repositories/transaction_repository.dart';
+import 'package:pos_mobile/models/transaction_model.dart';
+import 'package:pos_mobile/models/transaction_item_model.dart';
+import 'package:pos_mobile/models/customer_model.dart';
+import 'package:pos_mobile/repositories/customer_repository.dart';
+import 'package:uuid/uuid.dart';
+import 'package:pos_mobile/pages/karyawan/struk_page.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:pos_mobile/providers/auth_provider.dart';
 
 class CheckoutPage extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -18,15 +27,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
   late List<Map<String, dynamic>> items;
   final TextEditingController orderNoteController = TextEditingController();
   Map<String, dynamic>? selectedTable;
-
-  // Dummy Tables (In sync with ManageTablesPage for demo)
-  final List<Map<String, dynamic>> tables = [
-    {'id': '1', 'name': 'Meja 01', 'capacity': 2, 'status': 'Tersedia', 'area': 'Indoor'},
-    {'id': '2', 'name': 'Meja 02', 'capacity': 4, 'status': 'Terisi', 'area': 'Indoor'},
-    {'id': '3', 'name': 'Meja 03', 'capacity': 4, 'status': 'Tersedia', 'area': 'Outdoor'},
-    {'id': '4', 'name': 'Meja 04', 'capacity': 6, 'status': 'Tersedia', 'area': 'Outdoor'},
-    {'id': '5', 'name': 'VIP 01', 'capacity': 8, 'status': 'Tersedia', 'area': 'VIP Room'},
-  ];
+  CustomerModel? selectedCustomer;
+  List<Map<String, dynamic>> _allTables = [];
+  List<CustomerModel> _allCustomers = [];
+  bool _isLoadingTables = true;
+  bool _isLoadingCustomers = true;
 
   @override
   void initState() {
@@ -35,12 +40,165 @@ class _CheckoutPageState extends State<CheckoutPage> {
     items = List<Map<String, dynamic>>.from(
       widget.cartItems.map((item) => Map<String, dynamic>.from(item)),
     );
+    _loadTables();
+    _loadCustomers();
+  }
+
+  Future<void> _loadTables() async {
+    setState(() => _isLoadingTables = true);
+    try {
+      final auth = context.read<AuthProvider>();
+      final storeId = auth.selectedStore?.id;
+
+      if (storeId == null) {
+        if (mounted) setState(() => _isLoadingTables = false);
+        return;
+      }
+
+      final masterRepo = context.read<MasterRepository>();
+      final tables = await masterRepo.getTables(storeId);
+      if (mounted) {
+        setState(() {
+          _allTables = tables;
+          _isLoadingTables = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingTables = false);
+      }
+    }
+  }
+
+  Future<void> _loadCustomers() async {
+    setState(() => _isLoadingCustomers = true);
+    try {
+      final auth = context.read<AuthProvider>();
+      final storeId = auth.selectedStore?.id;
+
+      if (storeId == null) {
+        if (mounted) setState(() => _isLoadingCustomers = false);
+        return;
+      }
+
+      final customerRepo = context.read<CustomerRepository>();
+      final customers = await customerRepo.getCustomers(storeId);
+      if (mounted) {
+        setState(() {
+          _allCustomers = customers;
+          _isLoadingCustomers = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingCustomers = false);
+      }
+    }
   }
 
   @override
   void dispose() {
     orderNoteController.dispose();
     super.dispose();
+  }
+
+  void _showCustomerSelectionModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Pilih Pelanggan',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(TablerIcons.x),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (_isLoadingCustomers)
+                const Center(child: CircularProgressIndicator())
+              else if (_allCustomers.isEmpty)
+                Center(
+                  child: Column(
+                    children: [
+                      const Icon(TablerIcons.users, size: 48, color: Colors.grey),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Belum ada data pelanggan',
+                        style: GoogleFonts.plusJakartaSans(color: Colors.grey),
+                      ),
+                      TextButton(
+                        onPressed: () => _loadCustomers(),
+                        child: const Text('Refresh'),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _allCustomers.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return ListTile(
+                          leading: const CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            child: Icon(TablerIcons.user_minus, color: Colors.white),
+                          ),
+                          title: const Text('Tanpa Pelanggan'),
+                          selected: selectedCustomer == null,
+                          onTap: () {
+                            setState(() => selectedCustomer = null);
+                            Navigator.pop(context);
+                          },
+                        );
+                      }
+                      final customer = _allCustomers[index - 1];
+                      final isSelected = selectedCustomer?.id == customer.id;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Warna.primary.withValues(alpha: 0.1),
+                          child: Text(
+                            customer.name[0].toUpperCase(),
+                            style: TextStyle(color: Warna.primary, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        title: Text(customer.name),
+                        subtitle: Text(customer.phone ?? customer.email ?? '-'),
+                        selected: isSelected,
+                        onTap: () {
+                          setState(() => selectedCustomer = customer);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showTableSelectionModal() {
@@ -75,78 +233,85 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              Flexible(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 1.2,
-                  ),
-                  itemCount: tables.length,
-                  itemBuilder: (context, index) {
-                    final table = tables[index];
-                    final isSelected = selectedTable?['id'] == table['id'];
-                    final isOccupied = table['status'] == 'Terisi';
-
-                    return BounceTapper(
-                      onTap: isOccupied
-                          ? null
-                          : () {
-                              setState(() {
-                                selectedTable = table;
-                              });
-                              Navigator.pop(context);
-                            },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? Warna.primary
-                              : isOccupied
-                                  ? Colors.grey[200]
-                                  : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected
-                                ? Warna.primary
-                                : isOccupied
-                                    ? Colors.transparent
-                                    : Colors.grey[300]!,
+              _isLoadingTables
+                  ? const Center(child: CircularProgressIndicator())
+                  : _allTables.isEmpty
+                      ? const Center(child: Text('Tidak ada meja tersedia'))
+                      : GridView.builder(
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 1.2,
                           ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              table['name'],
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? Colors.white
-                                    : isOccupied
-                                        ? Colors.grey[500]
-                                        : Colors.black,
+                          itemCount: _allTables.length,
+                          itemBuilder: (context, index) {
+                            final table = _allTables[index];
+                            final isSelected =
+                                selectedTable?['id'] == table['id'];
+                            final isOccupied = table['status'] == 'Terisi';
+
+                            return BounceTapper(
+                              onTap: isOccupied
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        selectedTable = table;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Warna.primary
+                                      : isOccupied
+                                          ? Colors.grey[200]
+                                          : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Warna.primary
+                                        : isOccupied
+                                            ? Colors.transparent
+                                            : Colors.grey[300]!,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      table['name'],
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.bold,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : isOccupied
+                                                ? Colors.grey[500]
+                                                : Colors.black,
+                                      ),
+                                    ),
+                                    Text(
+                                      isOccupied
+                                          ? 'Terisi'
+                                          : '${table['capacity']} Kursi',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10,
+                                        color: isSelected
+                                            ? Colors.white.withValues(
+                                                alpha: 0.8)
+                                            : isOccupied
+                                                ? Colors.grey[400]
+                                                : Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Text(
-                              isOccupied ? 'Terisi' : '${table['capacity']} Kursi',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 10,
-                                color: isSelected
-                                    ? Colors.white.withValues(alpha: 0.8)
-                                    : isOccupied
-                                        ? Colors.grey[400]
-                                        : Colors.grey[600],
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
             ],
           ),
         );
@@ -290,6 +455,34 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Customer Selection
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Pelanggan',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: _showCustomerSelectionModal,
+                        icon: const Icon(TablerIcons.user, size: 18),
+                        label: Text(
+                          selectedCustomer != null
+                              ? selectedCustomer!.name
+                              : 'Pilih Pelanggan',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            color: Warna.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
                   // Table Selection
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -355,7 +548,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   const SizedBox(height: 15),
                   MyButtonPrimary(
-                    onPressed: () {
+                    onPressed: () async {
                       if (selectedTable == null) {
                         mySnackBar(
                           context: context,
@@ -365,12 +558,79 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         return;
                       }
 
-                      mySnackBar(
-                        context: context,
-                        text: 'Pembayaran Berhasil untuk ${selectedTable!['name']}!',
-                        status: ToastStatus.success,
+                      // Create Transaction Model
+                      final transactionId = const Uuid().v4();
+                      final auth = context.read<AuthProvider>();
+                      final storeId = auth.selectedStore?.id;
+                      final cashierId = auth.user?.id ?? '';
+
+                      if (storeId == null) {
+                        mySnackBar(
+                          context: context,
+                          text: 'Toko belum terpilih. Silakan login ulang.',
+                          status: ToastStatus.error,
+                        );
+                        return;
+                      }
+
+                      final transactionItems = items.map((item) {
+                        final unitPrice =
+                            (item['totalPrice'] ?? item['price']).toDouble();
+                        final subtotal = unitPrice * item['qty'];
+
+                        return TransactionItemModel(
+                          id: const Uuid().v4(),
+                          transactionId: transactionId,
+                          productId: item['id'],
+                          productName: item['name'],
+                          quantity: item['qty'],
+                          unitPrice: unitPrice,
+                          subtotal: subtotal,
+                          notes: item['note'],
+                        );
+                      }).toList();
+
+                      final transaction = TransactionModel(
+                        localId: transactionId,
+                        storeId: storeId,
+                        cashierId: cashierId,
+                        tableId: selectedTable!['id'],
+                        customerId: selectedCustomer?.id, // Added customerId
+                        items: transactionItems,
+                        totalAmount: totalPrice,
+                        paymentMethod: 'Tunai', // Default
+                        createdAt: DateTime.now(),
+                        notes: orderNoteController.text,
                       );
-                      Navigator.pop(context);
+
+                      try {
+                        final txRepo = context.read<TransactionRepository>();
+                        await txRepo.saveTransaction(transaction);
+
+                        if (!context.mounted) return;
+                        mySnackBar(
+                          context: context,
+                          text:
+                              'Pembayaran Berhasil untuk ${selectedTable!['name']}!',
+                          status: ToastStatus.success,
+                        );
+
+                        // Navigate to Receipt (Struk) Page
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                StrukPage(transaction: transaction),
+                          ),
+                        );
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        mySnackBar(
+                          context: context,
+                          text: 'Gagal memproses transaksi: $e',
+                          status: ToastStatus.error,
+                        );
+                      }
                     },
                     backgroundColor: Warna.primary,
                     foregroundColor: Colors.white,

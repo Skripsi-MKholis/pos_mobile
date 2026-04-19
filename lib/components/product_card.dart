@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:pos_mobile/configuration/configuration.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'components.dart';
 

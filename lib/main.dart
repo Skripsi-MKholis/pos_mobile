@@ -1,47 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:pos_mobile/components/components.dart';
 import 'package:pos_mobile/pages/auth/login_page.dart';
+import 'package:pos_mobile/pages/auth/store_selection_page.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pos_mobile/pages/owner/manage_stores_page.dart';
+import 'package:pos_mobile/pages/shared/menu_page.dart';
 import 'package:pos_mobile/pages/karyawan/kasir_page.dart';
 import 'package:pos_mobile/pages/owner/laporan_page.dart';
 import 'package:pos_mobile/pages/shared/pengaturan_page.dart';
 import 'package:pos_mobile/pages/karyawan/riwayat_transaksi_page.dart';
-import 'package:pos_mobile/configuration/configuration.dart';
-import 'package:pos_mobile/pages/shared/menu_page.dart';
 import 'package:pos_mobile/pages/pelanggan/beranda_pelanggan_page.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
-import 'package:pos_mobile/pages/owner/manage_stores_page.dart';
+import 'package:pos_mobile/components/components.dart';
+import 'package:pos_mobile/configuration/configuration.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:tabler_icons/tabler_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:pos_mobile/repositories/transaction_repository.dart';
+import 'package:pos_mobile/repositories/product_repository.dart';
+import 'package:pos_mobile/repositories/report_repository.dart';
+import 'package:pos_mobile/repositories/master_repository.dart';
+import 'package:pos_mobile/services/sync_service.dart';
+import 'package:pos_mobile/repositories/customer_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pos_mobile/providers/auth_provider.dart';
+import 'package:pos_mobile/repositories/store_repository.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Supabase.initialize(
+    url: 'https://nolawradcdkemdyumoqs.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vbGF3cmFkY2RrZW1keXVtb3FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MjAzNjIsImV4cCI6MjA5MTQ5NjM2Mn0.uwTp2g6yPJv6JUvyv4NBr1m0DgVt5fmKPiR3ED4hs4I',
+  );
+
+  // Initialize background sync
+  SyncService().initialize();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        Provider(create: (_) => TransactionRepository()),
+        Provider(create: (_) => ProductRepository()),
+        Provider(create: (_) => MasterRepository()),
+        Provider(create: (_) => ReportRepository()),
+        Provider(create: (_) => StoreRepository()),
+        Provider(create: (_) => CustomerRepository()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String? _userRole;
-
-  void _login(String role) {
-    setState(() {
-      _userRole = role;
-    });
-  }
-
-  void _logout() {
-    setState(() {
-      _userRole = null;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+
+    if (authProvider.isLoading) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Warna.primary),
+          useMaterial3: true,
+        ),
+        home: const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
+    Widget homeWidget;
+    if (!authProvider.isAuthenticated) {
+      homeWidget = const LoginPage();
+    } else if (authProvider.activeMembership == null) {
+      homeWidget = const StoreSelectionPage();
+    } else {
+      homeWidget = const MainScreen();
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'POS Mobile',
@@ -54,17 +94,13 @@ class _MyAppState extends State<MyApp> {
         textTheme: GoogleFonts.plusJakartaSansTextTheme(),
         useMaterial3: true,
       ),
-      home: _userRole == null
-          ? LoginPage(onLoginSuccess: _login)
-          : MainScreen(role: _userRole!, onLogout: _logout),
+      home: homeWidget,
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
-  final String role;
-  final VoidCallback onLogout;
-  const MainScreen({super.key, required this.role, required this.onLogout});
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -73,25 +109,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  final List<Map<String, String>> _stores = [
-    {'name': 'Toko Berkah Jaya', 'email': 'admin@pos.com'},
-    {'name': 'Cabang Sudirman', 'email': 'sudirman@pos.com'},
-  ];
-  late Map<String, String> _selectedStore;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedStore = _stores[0];
-  }
-
-  List<Map<String, dynamic>> _getNavItems() {
-    if (widget.role == 'Owner') {
+  List<Map<String, dynamic>> _getNavItems(String role) {
+    if (role == 'Owner') {
       return [
         {
           'icon': Icons.grid_view_rounded,
           'text': 'Menu',
-          'page': MenuPage(role: widget.role),
+          'page': MenuPage(role: role),
         },
         {
           'icon': Icons.point_of_sale,
@@ -109,7 +133,7 @@ class _MainScreenState extends State<MainScreen> {
           'page': const PengaturanPage(),
         },
       ];
-    } else if (widget.role == 'Karyawan') {
+    } else if (role == 'Karyawan') {
       return [
         {
           'icon': Icons.point_of_sale,
@@ -197,13 +221,16 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final selectedStore = authProvider.selectedStore;
+    final activeMembership = authProvider.activeMembership;
+    final role = activeMembership?.role ?? 'Pelanggan';
+    final navItems = _getNavItems(role);
+
     return Scaffold(
-      /* appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('POS Mobile'),
-      ), */
       appBar: MyAppBar(
-        title: 'POS Mobile',
+        title: selectedStore?.name ?? 'POS Mobile',
         isCenter: true,
         actions: [
           Padding(
@@ -219,13 +246,13 @@ class _MainScreenState extends State<MainScreen> {
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 child: const Icon(Icons.person, size: 20),
               ),
-              onSelected: (value) {
+              onSelected: (value) async {
                 switch (value) {
                   case 'profile':
                     // Navigate to profile page
                     break;
                   case 'logout':
-                    widget.onLogout();
+                    await authProvider.logout();
                     break;
                 }
               },
@@ -300,173 +327,28 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton2<Map<String, String>?>(
-                          isExpanded: true,
-                          customButton: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      _selectedStore['name']!,
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    size: 20,
-                                    color: Colors.black45,
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                _selectedStore['email']!,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            selectedStore?.name ?? 'Pilih Toko',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          items: [
-                            ..._stores.map(
-                              (store) => DropdownItem<Map<String, String>?>(
-                                value: store,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.storefront_outlined,
-                                      size: 18,
-                                      color: store == _selectedStore
-                                          ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                          : Colors.black54,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      store['name']!,
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 14,
-                                        fontWeight: store == _selectedStore
-                                            ? FontWeight.w600
-                                            : FontWeight.w500,
-                                        color: store == _selectedStore
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primary
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          Text(
+                            user?.email ?? '',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: Colors.black54,
                             ),
-                            const DropdownItem<Map<String, String>?>(
-                              enabled: false,
-                              value: null,
-                              child: Divider(height: 1),
-                            ),
-                            DropdownItem<Map<String, String>?>(
-                              value: const {'name': 'ADD_NEW', 'email': ''},
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.add_circle_outline_rounded,
-                                    size: 18,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Tambah Toko',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            DropdownItem<Map<String, String>?>(
-                              value: const {'name': 'MANAGE_ALL', 'email': ''},
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.settings_suggest_outlined,
-                                    size: 18,
-                                    color: Colors.black54,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Kelola Semua Toko',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value == null) return;
-                            final action = value['name'];
-                            if (action == 'ADD_NEW') {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const KelolaTokoPage(),
-                                ),
-                              );
-                            } else if (action == 'MANAGE_ALL') {
-                              Navigator.pop(context);
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageStoresPage(),
-                                ),
-                              );
-                            } else {
-                              setState(() {
-                                _selectedStore = value;
-                              });
-                            }
-                          },
-                          dropdownStyleData: DropdownStyleData(
-                            width: 250,
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            offset: const Offset(-8, -5),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          menuItemStyleData: const MenuItemStyleData(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
@@ -480,7 +362,7 @@ class _MainScreenState extends State<MainScreen> {
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   children: [
-                    ..._getNavItems().asMap().entries.map((entry) {
+                    ...navItems.asMap().entries.map((entry) {
                       int idx = entry.key;
                       var item = entry.value;
                       return _buildDrawerItem(
@@ -494,7 +376,7 @@ class _MainScreenState extends State<MainScreen> {
                       );
                     }),
 
-                    if (widget.role == 'Owner') ...[
+                    if (role == 'Owner') ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 8,
@@ -536,6 +418,14 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                     _buildDrawerItem(
+                      icon: TablerIcons.switch_horizontal,
+                      text: 'Pindah Toko',
+                      onTap: () {
+                        Navigator.pop(context);
+                        authProvider.selectMembership(null); // Resetting back to selection
+                      },
+                    ),
+                    _buildDrawerItem(
                       icon: Icons.help_outline,
                       text: 'Bantuan & Dukungan',
                       onTap: () {
@@ -562,9 +452,9 @@ class _MainScreenState extends State<MainScreen> {
                   text: 'Keluar',
                   iconColor: Colors.red[400],
                   textColor: Colors.red[400],
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
-                    widget.onLogout();
+                    await authProvider.logout();
                   },
                 ),
               ),
@@ -572,7 +462,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      body: _getNavItems()[_selectedIndex]['page'],
+      body: navItems[_selectedIndex]['page'],
 
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -596,7 +486,7 @@ class _MainScreenState extends State<MainScreen> {
                 context,
               ).colorScheme.primary.withValues(alpha: 0.1),
               color: Colors.grey[500],
-              tabs: _getNavItems().map((item) {
+              tabs: navItems.map((item) {
                 return GButton(icon: item['icon'], text: item['text']);
               }).toList(),
               selectedIndex: _selectedIndex,

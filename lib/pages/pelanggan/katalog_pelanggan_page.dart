@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 import 'package:pos_mobile/components/components.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:pos_mobile/components/product_card.dart';
 import 'package:pos_mobile/pages/pelanggan/keranjang_page.dart';
 import 'package:intl/intl.dart';

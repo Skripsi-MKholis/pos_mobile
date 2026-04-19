@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:pos_mobile/components/components.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
 import 'package:pos_mobile/pages/owner/kelola_toko_page.dart';
 
 class ManageStoresPage extends StatefulWidget {

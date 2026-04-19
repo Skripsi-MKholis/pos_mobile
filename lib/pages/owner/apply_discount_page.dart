@@ -5,7 +5,6 @@ import 'package:pos_mobile/configuration/configuration.dart';
 import 'package:pos_mobile/components/components.dart';
 import 'package:pos_mobile/components/product_card.dart';
 import 'package:tabler_icons/tabler_icons.dart';
-import 'package:bounce_tapper/bounce_tapper.dart';
 
 class ApplyDiscountPage extends StatefulWidget {
   final Map<String, dynamic> selectedDiscount;
